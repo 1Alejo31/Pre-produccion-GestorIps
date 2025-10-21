@@ -931,7 +931,7 @@ export class IpsGestion implements OnInit {
                 return 'bg-success';
             case 'inactivo':
                 return 'bg-danger';
-            case 'suspendido':
+            case 'en espera':
                 return 'bg-secondary';
             default:
                 return 'bg-secondary';
