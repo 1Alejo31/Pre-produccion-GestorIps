@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
     providedIn: 'root'
 })
 export class IpsGestionService {
-    private apiUrl = 'http://52.15.143.100:3000/api/hojas-vida';
+    private apiUrl = 'http://3.142.186.227:3000/api/hojas-vida';
 
     constructor(private http: HttpClient) { }
 

@@ -7,8 +7,8 @@ import * as CryptoJS from 'crypto-js';
     providedIn: 'root'
 })
 export class RegisterService {
-    private apiUrl = 'http://52.15.143.100:3000/api/users/register';
-    private ipsApiUrl = 'http://52.15.143.100:3000/api/ips/consultar';
+    private apiUrl = 'http://3.142.186.227:3000/api/users/register';
+    private ipsApiUrl = 'http://3.142.186.227:3000/api/ips/consultar';
 
     constructor(private http: HttpClient) {}
 
