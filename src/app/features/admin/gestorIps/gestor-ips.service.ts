@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
     providedIn: 'root'
 })
 export class GestorIpsService {
-    private apiUrl = 'http://localhost:3000/api/ips/consultar';
+    private apiUrl = 'http://52.15.143.100:3000/api/ips/consultar';
 
     constructor(private http: HttpClient) { }
 

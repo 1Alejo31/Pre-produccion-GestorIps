@@ -7,8 +7,8 @@ import * as CryptoJS from 'crypto-js';
     providedIn: 'root'
 })
 export class LoginService {
-    //private apiUrl = 'http://52.15.143.100:3000/api/auth/login';
-    private apiUrl = 'http://localhost:3000/api/auth/login';
+    private apiUrl = 'http://52.15.143.100:3000/api/auth/login';
+    //private apiUrl = 'http://localhost:3000/api/auth/login';
 
     constructor(private http: HttpClient) {}
 
