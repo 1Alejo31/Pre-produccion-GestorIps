@@ -758,9 +758,9 @@ export class HojaVida {
                 this.isLoadingConsulta = false;
                 
                 if (response.error === 0) {
-                    // La estructura correcta es response.response.hojas_vida
-                    this.hojasVidaExistentes = response.response?.hojas_vida || [];
-                    this.totalItems = response.response?.total_registros || this.hojasVidaExistentes.length;
+                    // La estructura correcta para hojas-vida-full es response.response.data
+                    this.hojasVidaExistentes = response.response?.data || [];
+                    this.totalItems = this.hojasVidaExistentes.length;
                     
                     this.filtrarHojasVida();
                     
