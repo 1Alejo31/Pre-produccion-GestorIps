@@ -1,0 +1,32 @@
+<header class="topbar mb-3">
+    <div class="left d-flex align-items-center gap-3">
+        <button class="icon-btn" (click)="onToggleMenu()" title="Toggle menu">☰</button>
+        <nav class="breadcrumb">
+        </nav>
+    </div>
+
+    <div class="right d-flex align-items-center gap-3">
+        <!-- Estado de sesión -->
+        <div class="session-info d-flex align-items-center gap-2">
+            <div class="session-status" [class]="getSessionStatusClass()">
+                <i class="fas fa-circle"></i>
+                <span class="ms-1">{{ getSessionStatusText() }}</span>
+            </div>
+            <div class="session-time text-muted small" *ngIf="sessionDuration && sessionDuration > 0">
+                <i class="fas fa-clock"></i>
+                <span class="ms-1">{{ sessionDuration }}min</span>
+            </div>
+        </div>
+
+        <!-- Bloque de usuario -->
+        <div class="user d-flex align-items-center gap-2">
+            <div class="avatar">{{ initials }}</div>
+            <div class="name">{{ displayName }}</div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-primary" (click)="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+</header>

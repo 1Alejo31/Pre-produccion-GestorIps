@@ -1,0 +1,116 @@
+<div class="layout" [class.collapsed]="isSidebarCollapsed" *ngIf="user as u">
+    <!-- Sidebar -->
+    <app-aside [activePanel]="activePanel" (selectPanel)="activatePanel($event)"></app-aside>
+
+    <!-- Main -->
+    <main class="main">
+        <app-topbar (menuToggle)="toggleSidebar()" (logoutClick)="logout()"></app-topbar>
+
+        <!-- Panel Dashboard -->
+        <div *ngIf="activePanel === 'dashboard'">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Panel de bienvenida -->
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">
+                                    <i class="fas fa-home me-2"></i>
+                                    Bienvenido, {{ user?.nombre }} {{ user?.apellido }}
+                                </h4>
+                                <p class="card-text text-muted">
+                                    Perfil: <span class="badge bg-primary">{{ user?.perfil }}</span> | 
+                                    Empresa: <span class="badge bg-secondary">{{ user?.empresa }}</span> |
+                                    Permisos: <span class="badge bg-info">{{ user?.permiso }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de estado de sesión -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Estado de Sesión
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="status-indicator bg-success rounded-circle me-3" style="width: 12px; height: 12px;"></div>
+                                    <span class="fw-bold text-success">Sesión Activa</span>
+                                </div>
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Tiempo de sesión: <span class="fw-bold">{{ getSessionDuration() }} minutos</span>
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-user me-2"></i>
+                                    Autenticado como: {{ user?.correo }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de acciones rápidas -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-bolt me-2"></i>
+                                    Acciones Rápidas
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2" *ngIf="hasAnyPermission()">
+                                    <button *ngIf="canViewGestorHojaVida" class="btn btn-outline-primary btn-sm" (click)="activatePanel('hojaVida')">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        Gestionar Hojas de Vida
+                                    </button>
+                                    <button *ngIf="canViewGestorUsuarios" class="btn btn-outline-secondary btn-sm" (click)="activatePanel('registroUsuarios')">
+                                        <i class="fas fa-user-plus me-2"></i>
+                                        Registrar Usuario
+                                    </button>
+                                    <button *ngIf="canViewAdminIps" class="btn btn-outline-warning btn-sm" (click)="activatePanel('gestorIps')">
+                                        <i class="fas fa-hospital-user me-2"></i>
+                                        Gestionar IPS
+                                    </button>
+                                    <button *ngIf="canViewIpsGestion" class="btn btn-outline-info btn-sm" (click)="activatePanel('ipsGestion')">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        IPS Gestión
+                                    </button>
+                                </div>
+                                
+                                <!-- Mensaje cuando no hay permisos -->
+                                <div *ngIf="!hasAnyPermission()" class="text-center text-muted">
+                                    <i class="fas fa-lock fa-2x mb-3"></i>
+                                    <p class="mb-0">No tienes permisos asignados para acceder a las funcionalidades del sistema.</p>
+                                    <small>Contacta al administrador para obtener los permisos necesarios.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Formulario de Registro de Usuarios - Solo Administrador con Lectura y Escritura -->
+        <app-registro-usuarios *ngIf="activePanel === 'registroUsuarios' && canViewGestorUsuarios"></app-registro-usuarios>
+
+        <!-- Panel Gestor de IPS - Administrador y Supervisor -->
+        <app-gestor-ips *ngIf="activePanel === 'gestorIps' && canViewAdminIps"></app-gestor-ips>
+
+        <!-- Panel IPS Gestion - Administrador, Supervisor y Usuario -->
+        <app-ips-gestion *ngIf="activePanel === 'ipsGestion' && canViewIpsGestion"></app-ips-gestion>
+
+        <!-- Panel Formulario de Hoja de Vida - Administrador, Supervisor y Cliente -->
+        <app-hoja-vida *ngIf="activePanel === 'hojaVida' && canViewGestorHojaVida"></app-hoja-vida>
+    </main>
+</div>
+
+<div class="layout" *ngIf="!user">
+    <main class="main container py-4">
+        <p>Cargando información...</p>
+    </main>
+</div>

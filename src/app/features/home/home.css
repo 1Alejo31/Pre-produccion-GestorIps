@@ -1,0 +1,11 @@
+:host {
+    --primary: #69B5D4;
+    --bg: #f3f4f8;
+    --dashboard-bg: #eaedf7;
+    --card-bg: #fff;
+    --text: #2c2e3e;
+    --muted: #6c757d;
+    --sidebar-text: #ffffff;
+    --border: #e5e7eb;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}

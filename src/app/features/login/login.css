@@ -1,0 +1,34 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'Segoe UI', sans-serif;
+
+    background-image: url('/assets/images/Fondo2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.login-container {
+    min-height: 25vh;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.login-form {
+    margin-top: 15% !important;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px #0187e143;
+}
+
+.logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}

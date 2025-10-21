@@ -1,0 +1,132 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="container py-3">
+    <div class="row g-3">
+        <!-- Datos personales -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <strong>Datos personales</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" formControlName="peNombre"
+                                [class.is-invalid]="submitted && f['peNombre'].invalid">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Apellido *</label>
+                            <input type="text" class="form-control" formControlName="peApellido"
+                                [class.is-invalid]="submitted && f['peApellido'].invalid">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Segundo Apellido</label>
+                            <input type="text" class="form-control" formControlName="peSegApellido"
+                                [class.is-invalid]="submitted && f['peSegApellido'].invalid">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo Documento *</label>
+                            <select class="form-select" formControlName="peTipoDocumento">
+                                <option *ngFor="let t of tiposDocumento" [value]="t">{{ t }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Documento *</label>
+                            <input type="text" class="form-control" formControlName="peDocumento"
+                                [class.is-invalid]="submitted && f['peDocumento'].invalid">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Teléfono fijo *</label>
+                            <input type="text" class="form-control" formControlName="peTelefonoFijo"
+                                [class.is-invalid]="submitted && f['peTelefonoFijo'].invalid">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Celular *</label>
+                            <input type="text" class="form-control" formControlName="peCel"
+                                [class.is-invalid]="submitted && f['peCel'].invalid">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Correo *</label>
+                            <input type="email" class="form-control" formControlName="peCorreo"
+                                [class.is-invalid]="submitted && f['peCorreo'].invalid">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Dirección *</label>
+                            <input type="text" class="form-control" formControlName="peDireccion"
+                                [class.is-invalid]="submitted && f['peDireccion'].invalid">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Permiso *</label>
+                            <select class="form-select" formControlName="pePermiso">
+                                <option>Lectura y Escritura</option>
+                                <option>Solo Lectura</option>
+                            </select>
+                        </div>
+                        <!-- Departamento y Ciudad como campos de texto -->
+                        <div class="col-md-4">
+                            <label class="form-label">Departamento *</label>
+                            <input type="text" class="form-control" formControlName="peDepartamento"
+                                [class.is-invalid]="submitted && f['peDepartamento'].invalid">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ciudad *</label>
+                            <input type="text" class="form-control" formControlName="peCiudad"
+                                [class.is-invalid]="submitted && f['peCiudad'].invalid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credenciales -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <strong>Credenciales</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Nombre de usuario (correo) *</label>
+                            <input type="email" class="form-control" formControlName="crNombreUsuario"
+                                [class.is-invalid]="submitted && f['crNombreUsuario'].invalid">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Contraseña *</label>
+                            <input type="password" class="form-control" formControlName="crPassword"
+                                [class.is-invalid]="submitted && f['crPassword'].invalid">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Perfil *</label>
+                            <select class="form-select" formControlName="crPerfil">
+                                <option *ngFor="let p of perfiles">{{ p }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Empresa *</label>
+                            <select class="form-select" formControlName="crEmpresa"
+                                [class.is-invalid]="submitted && f['crEmpresa'].invalid"
+                                [disabled]="cargandoIps">
+                                <option value="" *ngIf="!cargandoIps">Seleccione una IPS</option>
+                                <option value="" *ngIf="cargandoIps">Cargando IPS...</option>
+                                <option *ngFor="let ips of ips" [value]="ips._id">{{ ips.NOMBRE_IPS }}</option>
+                            </select>
+                            <div class="invalid-feedback" *ngIf="submitted && f['crEmpresa'].invalid">
+                                Debe seleccionar una IPS
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </div>
+</form>

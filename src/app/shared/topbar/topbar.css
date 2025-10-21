@@ -1,0 +1,87 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: #fff;
+    /* usa tu variable global si la tienes, ej. var(--dashboard-bg) */
+    border-radius: .5rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.topbar .icon-btn {
+    border: none;
+    background: #f1f3f5;
+    border-radius: .375rem;
+    padding: .35rem .6rem;
+    cursor: pointer;
+}
+
+.topbar .breadcrumb .sep {
+    margin: 0 .5rem;
+    color: #94a3b8;
+}
+
+.user .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    background: #f1f3f5;
+    /* ajusta si tienes variable global */
+    color: #334155;
+}
+
+.user .name {
+    font-weight: 500;
+    color: #334155;
+}
+
+/* Estilos para el estado de sesión */
+.session-info {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.session-status {
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.session-status i {
+    font-size: 0.75rem;
+}
+
+.session-time {
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.session-time i {
+    font-size: 0.7rem;
+}
+
+/* Estados de conexión */
+.text-success {
+    color: #198754 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}

@@ -1,0 +1,29 @@
+.menu-item.active::before {
+    content: '';
+    position: absolute;
+    top: -0px;
+    bottom: -0px;
+    left: 0px;
+    right: -56px;
+    background: var(--dashboard-bg);
+    border-radius: 10px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+    z-index: 0;
+}
+
+.menu-item.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -60px;
+    width: 50px;
+    height: 50px;
+    transform: translateY(-50%);
+    background: var(--dashboard-bg);
+    /* el color del área del dashboard */
+    border-radius: 60%;
+    z-index: 1;
+    box-shadow: 0 0 0 8px var(--dashboard-bg);
+    /* suaviza el borde con el fondo */
+}
+

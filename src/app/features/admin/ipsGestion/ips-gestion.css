@@ -1,0 +1,276 @@
+.container {
+    max-width: 1200px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #69B5D4 0%, #5a9fd4 100%);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    border: none;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #69B5D4;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #69B5D4;
+    font-weight: 500;
+    padding: 12px 20px;
+    margin-right: 5px;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgba(105, 181, 212, 0.1);
+    color: #5a9fd4;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #69B5D4;
+    color: white;
+    border-bottom: 2px solid #69B5D4;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #343a40;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 12px;
+}
+
+.table td {
+    padding: 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(105, 181, 212, 0.1);
+}
+
+.btn-action {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin: 0 2px;
+}
+
+.btn-ver-detalle {
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.btn-ver-detalle:hover {
+    background-color: #17a2b8;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+}
+
+.btn-agendar {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.btn-agendar:hover {
+    background-color: #28a745;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.badge {
+    font-size: 0.875rem;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+.form-control:focus {
+    border-color: #69B5D4;
+    box-shadow: 0 0 0 0.2rem rgba(105, 181, 212, 0.25);
+}
+
+.pagination .page-link {
+    color: #69B5D4;
+    border-color: #dee2e6;
+    padding: 8px 12px;
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(105, 181, 212, 0.1);
+    border-color: #69B5D4;
+    color: #5a9fd4;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #69B5D4;
+    border-color: #69B5D4;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+/* Estilos para el modal del visualizador de PDF */
+.swal-pdf-viewer {
+    padding: 20px !important;
+}
+
+.swal-pdf-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 80vh !important;
+    overflow: hidden !important;
+}
+
+.swal-pdf-viewer .swal2-html-container {
+    height: 80vh !important;
+    max-height: 80vh !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.swal-pdf-viewer iframe {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Estilos para el modal de detalle */
+:global(.swal-wide) {
+    width: 900px !important;
+    max-width: 95vw !important;
+}
+
+:global(.swal-wide .swal2-html-container) {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.card-header h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-body .row > div {
+    transition: background-color 0.3s ease;
+}
+
+.card-body .row > div:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-action {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        margin: 1px 0;
+        width: 100%;
+    }
+    
+    .table td, .table th {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Estilos para formulario de agendamiento */
+:global(.swal2-popup) {
+    border-radius: 15px;
+}
+
+:global(.swal2-title) {
+    color: #69B5D4;
+    font-weight: 600;
+}
+
+:global(.swal2-html-container .form-label) {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+:global(.swal2-html-container .form-control) {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+}
+
+:global(.swal2-html-container .form-control:focus) {
+    border-color: #69B5D4;
+    box-shadow: 0 0 0 0.2rem rgba(105, 181, 212, 0.25);
+}
+
+:global(.swal2-confirm) {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+}
+
+:global(.swal2-cancel) {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+}

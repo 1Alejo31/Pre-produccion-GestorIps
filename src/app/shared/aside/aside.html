@@ -1,0 +1,45 @@
+<aside class="sidebar d-flex flex-column">
+    <div class="brand d-flex align-items-center gap-2 fw-bold">
+        <span class="brand-logo d-inline-grid place-items-center">
+            <img src="../../../assets/images/icono2.png" alt="" class="logo" width="100%">
+        </span>
+        <span class="brand-text">REDCEM</span>
+    </div>
+
+    <nav class="menu">
+        <!-- Gestor de Usuario - Solo Administrador con Lectura y Escritura -->
+        <a *ngIf="canViewGestorUsuarios" class="menu-item d-grid" [class.active]="activePanel === 'registroUsuarios'"
+            (click)="openRegistroUsuarios()">
+            <span class="icon">👤</span>
+            <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">Gestor de
+                usuario</span>
+        </a>
+
+        <!-- Admin IPS - Administrador y Supervisor -->
+        <a *ngIf="canViewAdminIps" class="menu-item d-grid" [class.active]="activePanel === 'gestorIps'"
+            (click)="openGestorIps()">
+            <span class="icon">🏥</span>
+            <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">Admin IPS</span>
+        </a>
+
+        <!-- IPS Gestión - Administrador, Supervisor y Usuario -->
+        <a *ngIf="canViewIpsGestion" class="menu-item d-grid" [class.active]="activePanel === 'ipsGestion'"
+            (click)="openIpsGestion()">
+            <span class="icon">📅</span>
+            <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">IPS Gestión</span>
+        </a>
+
+        <!-- Gestor Hoja de Vida - Administrador, Supervisor y Cliente -->
+        <a *ngIf="canViewGestorHojaVida" class="menu-item d-grid" [class.active]="activePanel === 'hojaVida'" (click)="openHojaVida()">
+            <span class="icon">📋</span>
+            <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">Gestor Hoja de Vida</span>
+        </a>
+
+        <!-- Sección de aplicaciones - Solo mostrar si hay al menos una opción visible -->
+        <div *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida" class="menu-section text-uppercase">Applications</div>
+        <a *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida" class="menu-item d-grid" role="button">
+            <span class="icon">📦</span>
+            <span class="text">Aplicaciones</span>
+        </a>
+    </nav>
+</aside>

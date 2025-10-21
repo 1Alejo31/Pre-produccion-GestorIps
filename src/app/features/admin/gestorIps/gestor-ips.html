@@ -1,0 +1,432 @@
+<div class="container py-3">
+    <!-- Pestañas para alternar entre registro y consulta -->
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'registro'"
+                (click)="setActiveTab('registro')" type="button">
+                <i class="fas fa-hospital-alt"></i> Registro de IPS
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'consulta'"
+                (click)="setActiveTab('consulta')" type="button">
+                <i class="fas fa-search"></i> Consultar IPS
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <!-- Pestaña de Registro de IPS -->
+        @if (activeTab === 'registro') {
+        <div class="tab-pane fade" [class.show]="activeTab === 'registro'" [class.active]="activeTab === 'registro'">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-hospital-alt me-2"></i>Registro de Nueva IPS
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Información Básica
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="NOMBRE_IPS" class="form-label">Nombre de la IPS <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="NOMBRE_IPS" formControlName="NOMBRE_IPS"
+                                    [class.is-invalid]="isFieldInvalid('NOMBRE_IPS')"
+                                    placeholder="Ingrese el nombre de la IPS">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('NOMBRE_IPS')">
+                                    {{ getFieldError('NOMBRE_IPS') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="NIT" class="form-label">NIT <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="NIT" formControlName="NIT"
+                                    [class.is-invalid]="isFieldInvalid('NIT')" placeholder="123456789-0">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('NIT')">
+                                    {{ getFieldError('NIT') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="REPRESENTANTE" class="form-label">Representante Legal <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="REPRESENTANTE"
+                                    formControlName="REPRESENTANTE" [class.is-invalid]="isFieldInvalid('REPRESENTANTE')"
+                                    placeholder="Nombre del representante legal">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('REPRESENTANTE')">
+                                    {{ getFieldError('REPRESENTANTE') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="ESTADO" class="form-label">Estado <span class="text-danger">*</span></label>
+                                <select class="form-select" id="ESTADO" formControlName="ESTADO"
+                                    [class.is-invalid]="isFieldInvalid('ESTADO')">
+                                    <option value="">Seleccione un estado</option>
+                                    <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('ESTADO')">
+                                    {{ getFieldError('ESTADO') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-address-book me-2"></i>Información de Contacto
+                                </h6>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="DIRECCION" class="form-label">Dirección <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="DIRECCION" formControlName="DIRECCION"
+                                    [class.is-invalid]="isFieldInvalid('DIRECCION')"
+                                    placeholder="Dirección completa de la IPS">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('DIRECCION')">
+                                    {{ getFieldError('DIRECCION') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="TELEFONO" class="form-label">Teléfono <span
+                                        class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="TELEFONO" formControlName="TELEFONO"
+                                    [class.is-invalid]="isFieldInvalid('TELEFONO')" placeholder="Número de teléfono">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('TELEFONO')">
+                                    {{ getFieldError('TELEFONO') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="CORREO" class="form-label">Correo Electrónico <span
+                                        class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="CORREO" formControlName="CORREO"
+                                    [class.is-invalid]="isFieldInvalid('CORREO')" placeholder="correo@ejemplo.com">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('CORREO')">
+                                    {{ getFieldError('CORREO') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ubicación -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Ubicación
+                                </h6>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="DEPARTAMENTO" class="form-label">Departamento <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="DEPARTAMENTO" formControlName="DEPARTAMENTO"
+                                    [class.is-invalid]="isFieldInvalid('DEPARTAMENTO')"
+                                    placeholder="Ingrese el departamento">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('DEPARTAMENTO')">
+                                    {{ getFieldError('DEPARTAMENTO') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="CIUDAD" class="form-label">Ciudad <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="CIUDAD" formControlName="CIUDAD"
+                                    [class.is-invalid]="isFieldInvalid('CIUDAD')" placeholder="Ciudad">
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('CIUDAD')">
+                                    {{ getFieldError('CIUDAD') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="REGIONAL" class="form-label">Regional <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="REGIONAL" formControlName="REGIONAL"
+                                    [class.is-invalid]="isFieldInvalid('REGIONAL')">
+                                    <option value="">Seleccione una regional</option>
+                                    <option *ngFor="let regional of regionales" [value]="regional">{{ regional }}
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('REGIONAL')">
+                                    {{ getFieldError('REGIONAL') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Atención -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-stethoscope me-2"></i>Información de Atención
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo_atencion" class="form-label">Tipo de Atención <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="tipo_atencion" formControlName="tipo_atencion"
+                                    [class.is-invalid]="isFieldInvalid('tipo_atencion')">
+                                    <option value="">Seleccione el tipo de atención</option>
+                                    <option *ngFor="let tipo of tiposAtencion" [value]="tipo">{{ tipo }}</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('tipo_atencion')">
+                                    {{ getFieldError('tipo_atencion') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Especialidades <span class="text-danger">*</span></label>
+                                <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                    <div class="row">
+                                        <div class="col-md-6" *ngFor="let especialidad of especialidades">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    [id]="'especialidad_' + especialidad"
+                                                    [checked]="isEspecialidadSelected(especialidad)"
+                                                    (change)="onEspecialidadChange(especialidad, $event)">
+                                                <label class="form-check-label" [for]="'especialidad_' + especialidad">
+                                                    {{ especialidad }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Operacional -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-clock me-2"></i>Información Operacional
+                                </h6>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="horario_atencion" class="form-label">Horario de Atención <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="horario_atencion" formControlName="horario_atencion"
+                                    [class.is-invalid]="isFieldInvalid('horario_atencion')">
+                                    <option value="">Seleccione el horario</option>
+                                    <option *ngFor="let horario of horariosAtencion" [value]="horario">{{ horario }}
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('horario_atencion')">
+                                    {{ getFieldError('horario_atencion') }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="nivel_complejidad" class="form-label">Nivel de Complejidad <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="nivel_complejidad" formControlName="nivel_complejidad"
+                                    [class.is-invalid]="isFieldInvalid('nivel_complejidad')">
+                                    <option value="">Seleccione el nivel</option>
+                                    <option *ngFor="let nivel of nivelesComplejidad" [value]="nivel">{{ nivel }}
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalid('nivel_complejidad')">
+                                    {{ getFieldError('nivel_complejidad') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-secondary" (click)="resetForm()"
+                                        [disabled]="isLoading">
+                                        <i class="fas fa-undo me-2"></i>Limpiar
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+                                        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"
+                                            role="status"></span>
+                                        <i *ngIf="!isLoading" class="fas fa-save me-2"></i>
+                                        {{ isLoading ? 'Registrando...' : 'Registrar IPS' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Pestaña de Consulta de IPS -->
+        @if (activeTab === 'consulta') {
+        <div class="tab-pane fade" [class.show]="activeTab === 'consulta'" [class.active]="activeTab === 'consulta'">
+
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-hospital me-2"></i>
+                        Consulta de IPS Registradas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Barra de búsqueda -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control"
+                                    placeholder="Buscar por nombre, NIT, correo, ciudad..." [(ngModel)]="searchTerm"
+                                    (input)="onSearchChange()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-primary" (click)="consultarIps()" [disabled]="isLoadingConsulta">
+                                <i class="fas fa-sync-alt me-1" [class.fa-spin]="isLoadingConsulta"></i>
+                                Actualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    @if (isLoadingConsulta) {
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Consultando IPS...</p>
+                    </div>
+                    }
+
+                    <!-- Tabla de resultados -->
+                    @if (!isLoadingConsulta && ipsFiltradas.length > 0) {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre IPS</th>
+                                    <th>NIT</th>
+                                    <th>Ciudad</th>
+                                    <th>Regional</th>
+                                    <th>Estado</th>
+                                    <th>Nivel</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (ips of paginatedIps; track ips._id) {
+                                <tr>
+                                    <td>
+                                        <strong>{{ ips.NOMBRE_IPS }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ ips.REPRESENTANTE }}</small>
+                                    </td>
+                                    <td>{{ ips.NIT }}</td>
+                                    <td>{{ ips.CIUDAD }}</td>
+                                    <td>{{ ips.REGIONAL }}</td>
+                                    <td>
+                                        <span class="badge" [class]="getEstadoBadgeClass(ips.ESTADO)">
+                                            {{ ips.ESTADO }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            Nivel {{ ips.COMPLEMENTARIA_2.nivel_complejidad }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-action btn-ver-detalle btn-sm d-flex align-items-center gap-1" 
+                                            (click)="verDetalle(ips)" title="Ver detalle completo">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                            </svg>
+                                            <span class="d-none d-md-inline">Ver</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    @if (totalPages > 1) {
+                    <nav aria-label="Paginación de IPS">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" [class.disabled]="currentPage === 1">
+                                <button class="page-link" (click)="changePage(currentPage - 1)"
+                                    [disabled]="currentPage === 1">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                            </li>
+
+                            @for (page of [].constructor(totalPages); track $index; let i = $index) {
+                            <li class="page-item" [class.active]="currentPage === i + 1">
+                                <button class="page-link" (click)="changePage(i + 1)">
+                                    {{ i + 1 }}
+                                </button>
+                            </li>
+                            }
+
+                            <li class="page-item" [class.disabled]="currentPage === totalPages">
+                                <button class="page-link" (click)="changePage(currentPage + 1)"
+                                    [disabled]="currentPage === totalPages">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                    }
+
+                    <!-- Información de resultados -->
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} a
+                                {{ Math.min(currentPage * itemsPerPage, ipsFiltradas.length) }}
+                                de {{ ipsFiltradas.length }} registros
+                                @if (searchTerm) {
+                                (filtrados de {{ totalItems }} total)
+                                }
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                Página {{ currentPage }} de {{ totalPages }}
+                            </small>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Sin resultados -->
+                    @if (!isLoadingConsulta && ipsFiltradas.length === 0) {
+                    <div class="text-center py-4">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No se encontraron IPS</h5>
+                        @if (searchTerm) {
+                        <p class="text-muted">
+                            No hay resultados para "{{ searchTerm }}"
+                            <br>
+                            <button class="btn btn-link p-0" (click)="searchTerm = ''; onSearchChange()">
+                                Limpiar búsqueda
+                            </button>
+                        </p>
+                        } @else {
+                        <p class="text-muted">No hay IPS registradas en el sistema</p>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
