@@ -8,7 +8,7 @@ import * as CryptoJS from 'crypto-js';
 })
 export class RegisterHojaVidaService {
     private apiUrl = 'http://3.142.186.227:3000/api/hojas-vida/';
-    private consultarUrl = 'http://3.142.186.227:3000/api/hojas-vida/consultar';
+    private consultarUrl = 'http://3.142.186.227:3000/api/hojas-vida/hojas-vida-full';
     //private apiUrl = 'http://localhost:3000/api/hojas-vida/';
     //private consultarUrl = 'http://localhost:3000/api/hojas-vida/hojas-vida-full';
 
