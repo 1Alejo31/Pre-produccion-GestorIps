@@ -87,7 +87,7 @@ export class IpsGestionService {
         formData.append('token', token);
         formData.append('pdf', pdfFile);
 
-        return this.http.put<any>('http://localhost:3000/api/pdf/pdf', formData, { headers }).pipe(
+        return this.http.put<any>('http://3.142.186.227:3000/api/pdf/pdf', formData, { headers }).pipe(
             catchError((error: HttpErrorResponse) => {
                 if (error.error && typeof error.error === 'object' && error.error.hasOwnProperty('error')) {
                     return new Observable(observer => {
@@ -106,7 +106,7 @@ export class IpsGestionService {
             'Authorization': `Bearer ${token}`
         });
 
-        return this.http.get(`http://localhost:3000/api/pdf/pdf/${filename}`, {
+        return this.http.get(`http://3.142.186.227:3000/api/pdf/pdf/${filename}`, {
             headers,
             responseType: 'blob'
         }).pipe(
