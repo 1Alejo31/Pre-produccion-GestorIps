@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { RegisterHojaVidaService } from './hoja.service';
 import { AuthService } from '../../../core/auth.service';
+import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 
 @Component({
     selector: 'app-hoja-vida',
@@ -14,7 +15,7 @@ import { AuthService } from '../../../core/auth.service';
     templateUrl: './hoja-vida.html',
     styleUrls: ['./hoja-vida.css']
 })
-export class HojaVida {
+export class HojaVida implements AfterViewInit, OnDestroy {
     form: FormGroup;
     submitted = false;
 
@@ -49,6 +50,23 @@ export class HojaVida {
     itemsPerPage = 10;
     totalItems = 0;
 
+    // Propiedades para gráficas
+    @ViewChild('pieChart', { static: false }) pieChartRef!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('barChart', { static: false }) barChartRef!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('cityChart', { static: false }) cityChartRef!: ElementRef<HTMLCanvasElement>;
+
+    pieChart: Chart | null = null;
+    barChart: Chart | null = null;
+    cityChart: Chart | null = null;
+
+    estadisticasEstado: any = {};
+    estadisticasCiudad: any = {};
+    totalHojasVida = 0;
+    ultimaActualizacion = new Date();
+    isLoadingGraficas = false;
+    
+    private intervalId: any;
+
     // Listas para selects
     generos = ['Masculino', 'Femenino', 'Otro'];
     estados = ['Activo', 'Pendiente', 'Rechazado', 'Admitido'];
@@ -62,6 +80,8 @@ export class HojaVida {
         private hojaVidaService: RegisterHojaVidaService,
         private authService: AuthService
     ) {
+        // Registrar componentes de Chart.js
+        Chart.register(...registerables);
         this.form = this.fb.group({
 
             pkeyHojaVida: ['', [Validators.required]],
@@ -104,6 +124,8 @@ export class HojaVida {
         // Si se selecciona el tab de consulta, cargar las hojas de vida
         if (tab === 'consulta') {
             this.consultarHojasVida();
+        } else if (tab === 'graficas') {
+            this.iniciarGraficas();
         }
     }
 
@@ -899,12 +921,8 @@ export class HojaVida {
         // Header con estado
         html += `<div class="d-flex align-items-center mb-3">`;
         html += `<h5 class="mb-0 me-3">Detalle de Hoja de Vida</h5>`;
-        const statusBadge = hoja.ESTADO === 'ACTIVO' ? 
-            '<span class="badge bg-success">✓ Activo</span>' : 
-            hoja.ESTADO === 'PENDIENTE' ? 
-            '<span class="badge bg-warning">⏳ Pendiente</span>' :
-            '<span class="badge bg-danger">✗ Inactivo</span>';
-        html += statusBadge;
+        const statusBadge = this.getBadgeClass(hoja.ESTADO);
+        html += `<span class="badge ${statusBadge}"><span class="me-1">●</span>${hoja.ESTADO}</span>`;
         html += `</div>`;
 
         // Información Personal
@@ -914,25 +932,23 @@ export class HojaVida {
         html += '<div class="row">';
         
         const personalFields = [
-            { key: 'DOCUMENTO', label: '🆔 Documento', icon: '🆔' },
-            { key: 'NOMBRE', label: '👤 Nombre', icon: '👤' },
-            { key: 'PRIMER_APELLIDO', label: '👤 Primer Apellido', icon: '👤' },
-            { key: 'SEGUNDO_APELLIDO', label: '👤 Segundo Apellido', icon: '👤' },
-            { key: 'EDAD', label: '🎂 Edad', icon: '🎂' },
-            { key: 'GENERO', label: '⚧ Género', icon: '⚧' },
-            { key: 'FECH_NACIMIENTO', label: '📅 Fecha de Nacimiento', icon: '📅' }
+            { key: 'DOCUMENTO', label: '🆔 Documento' },
+            { key: 'NOMBRE', label: '👤 Nombre' },
+            { key: 'PRIMER_APELLIDO', label: '👤 Primer Apellido' },
+            { key: 'SEGUNDO_APELLIDO', label: '👤 Segundo Apellido' },
+            { key: 'EDAD', label: '🎂 Edad' },
+            { key: 'GENERO', label: '⚧ Género' },
+            { key: 'FECH_NACIMIENTO', label: '📅 Fecha de Nacimiento' }
         ];
 
         personalFields.forEach(field => {
             const value = hoja[field.key] || 'N/A';
-            const hasError = false; // En este caso no hay validación de errores
-            const colorClass = hasError ? 'text-danger fw-bold' : 'text-dark';
-            const bgClass = hasError ? 'bg-danger bg-opacity-10' : '';
-
-            html += `<div class="col-md-6 mb-2 p-2 ${bgClass}" style="border-radius: 5px;">`;
-            html += `<strong class="text-muted">${field.label}:</strong><br>`;
-            html += `<span class="${colorClass}" style="font-size: 1.1em;">${value}</span>`;
-            html += `</div>`;
+            if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                html += `</div>`;
+            }
         });
         
         html += '</div></div></div>';
@@ -944,22 +960,20 @@ export class HojaVida {
         html += '<div class="row">';
         
         const contactFields = [
-            { key: 'CORREO', label: '📧 Correo Electrónico', icon: '📧' },
-            { key: 'TELEFONO', label: '📞 Teléfono', icon: '📞' },
-            { key: 'CELULAR', label: '📱 Celular', icon: '📱' },
-            { key: 'DIRECCION', label: '🏠 Dirección', icon: '🏠' }
+            { key: 'CORREO', label: '📧 Correo Electrónico' },
+            { key: 'TELEFONO', label: '📞 Teléfono' },
+            { key: 'CELULAR', label: '📱 Celular' },
+            { key: 'DIRECCION', label: '🏠 Dirección' }
         ];
 
         contactFields.forEach(field => {
             const value = hoja[field.key] || 'N/A';
-            const hasError = false;
-            const colorClass = hasError ? 'text-danger fw-bold' : 'text-dark';
-            const bgClass = hasError ? 'bg-danger bg-opacity-10' : '';
-
-            html += `<div class="col-md-6 mb-2 p-2 ${bgClass}" style="border-radius: 5px;">`;
-            html += `<strong class="text-muted">${field.label}:</strong><br>`;
-            html += `<span class="${colorClass}" style="font-size: 1.1em;">${value}</span>`;
-            html += `</div>`;
+            if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                html += `</div>`;
+            }
         });
         
         html += '</div></div></div>';
@@ -971,25 +985,23 @@ export class HojaVida {
         html += '<div class="row">';
         
         const academicFields = [
-            { key: 'CODIPROGACAD', label: '🎓 Programa Académico', icon: '🎓' },
-            { key: 'ANNOPERIACAD', label: '📅 Año Período Académico', icon: '📅' },
-            { key: 'NUMEPERIACAD', label: '🔢 Número Período Académico', icon: '🔢' },
-            { key: 'CIUDAD', label: '🏙️ Ciudad', icon: '🏙️' },
-            { key: 'DEPARTAMENTO', label: '🗺️ Departamento', icon: '🗺️' },
-            { key: 'REGIONAL', label: '🏢 Regional', icon: '🏢' },
-            { key: 'COLEGIO', label: '🏫 Colegio', icon: '🏫' }
+            { key: 'CODIPROGACAD', label: '🎓 Programa Académico' },
+            { key: 'ANNOPERIACAD', label: '📅 Año Período Académico' },
+            { key: 'NUMEPERIACAD', label: '🔢 Número Período Académico' },
+            { key: 'CIUDAD', label: '🏙️ Ciudad' },
+            { key: 'DEPARTAMENTO', label: '🗺️ Departamento' },
+            { key: 'REGIONAL', label: '🏢 Regional' },
+            { key: 'COLEGIO', label: '🏫 Colegio' }
         ];
 
         academicFields.forEach(field => {
             const value = hoja[field.key] || 'N/A';
-            const hasError = false;
-            const colorClass = hasError ? 'text-danger fw-bold' : 'text-dark';
-            const bgClass = hasError ? 'bg-danger bg-opacity-10' : '';
-
-            html += `<div class="col-md-6 mb-2 p-2 ${bgClass}" style="border-radius: 5px;">`;
-            html += `<strong class="text-muted">${field.label}:</strong><br>`;
-            html += `<span class="${colorClass}" style="font-size: 1.1em;">${value}</span>`;
-            html += `</div>`;
+            if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                html += `</div>`;
+            }
         });
         
         html += '</div></div></div>';
@@ -1001,65 +1013,123 @@ export class HojaVida {
         html += '<div class="row">';
         
         const additionalFields = [
-            { key: 'CODIGO_INSCRIPCION', label: '🎫 Código de Inscripción', icon: '🎫' },
-            { key: 'FECHA_INSCRIPCION', label: '📅 Fecha de Inscripción', icon: '📅' },
-            { key: 'ESTADO', label: '📊 Estado', icon: '📊' },
-            { key: 'ESTRATO', label: '🏘️ Estrato', icon: '🏘️' },
-            { key: 'GRUP_MINO', label: '👥 Grupo Minoritario', icon: '👥' },
-            { key: 'TIPO_MEDIO', label: '📺 Tipo de Medio', icon: '📺' },
-            { key: 'COMPLEMENTARIA_1', label: '📝 Info Complementaria 1', icon: '📝' },
-            { key: 'COMPLEMENTARIA_2', label: '📝 Info Complementaria 2', icon: '📝' }
+            { key: 'CODIGO_INSCRIPCION', label: '🎫 Código de Inscripción' },
+            { key: 'FECHA_INSCRIPCION', label: '📅 Fecha de Inscripción' },
+            { key: 'ESTRATO', label: '🏘️ Estrato' },
+            { key: 'GRUP_MINO', label: '👥 Grupo Minoritario' },
+            { key: 'TIPO_MEDIO', label: '📺 Tipo de Medio' },
+            { key: 'COMPLEMENTARIA_1', label: '📝 Info Complementaria 1' },
+            { key: 'COMPLEMENTARIA_2', label: '📝 Info Complementaria 2' }
         ];
 
         additionalFields.forEach(field => {
-            let value = hoja[field.key] || 'N/A';
-            const hasError = false;
-            const colorClass = hasError ? 'text-danger fw-bold' : 'text-dark';
-            const bgClass = hasError ? 'bg-danger bg-opacity-10' : '';
-
-            if (field.key === 'ESTADO') {
-                const badgeClass = value === 'ACTIVO' ? 'bg-success' : value === 'PENDIENTE' ? 'bg-warning' : 'bg-danger';
-                value = `<span class="badge ${badgeClass}">${value}</span>`;
+            const value = hoja[field.key] || 'N/A';
+            if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                html += `</div>`;
             }
-
-            html += `<div class="col-md-6 mb-2 p-2 ${bgClass}" style="border-radius: 5px;">`;
-            html += `<strong class="text-muted">${field.label}:</strong><br>`;
-            html += `<span class="${colorClass}" style="font-size: 1.1em;">${value}</span>`;
-            html += `</div>`;
         });
         
         html += '</div></div></div>';
 
-        // IDs del Sistema y Fechas
+        // Información Médica (si existe)
+        if (hoja.EXAMENES || hoja.FECHA_HORA || hoja.RECOMENDACIONES || hoja.IPS_ID || hoja.NOMBREIPS) {
+            html += '<div class="card mb-3 shadow">';
+            html += '<div class="card-header bg-danger text-white"><strong>🏥 Información Médica</strong></div>';
+            html += '<div class="card-body">';
+            html += '<div class="row">';
+            
+            const medicalFields = [
+                { key: 'EXAMENES', label: '🔬 Exámenes' },
+                { key: 'FECHA_HORA', label: '📅 Fecha y Hora', isDateTime: true },
+                { key: 'IPS_ID', label: '🏥 ID IPS' },
+                { key: 'NOMBREIPS', label: '🏥 Nombre IPS' }
+            ];
+
+            medicalFields.forEach(field => {
+                let value = hoja[field.key] || 'N/A';
+                if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                    if (field.isDateTime && value !== 'N/A') {
+                        value = this.formatearFecha(value);
+                    }
+                    html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                    html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                    html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                    html += `</div>`;
+                }
+            });
+
+            // Recomendaciones en toda la fila si existe
+            if (hoja.RECOMENDACIONES && hoja.RECOMENDACIONES !== 'N/A' && hoja.RECOMENDACIONES !== '') {
+                html += `<div class="col-12 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">💊 Recomendaciones:</strong><br>`;
+                html += `<div class="alert alert-info mt-2" style="font-size: 1.1em;">${hoja.RECOMENDACIONES}</div>`;
+                html += `</div>`;
+            }
+            
+            html += '</div></div></div>';
+        }
+
+        // Información del Sistema
         html += '<div class="card mb-3 shadow">';
         html += '<div class="card-header bg-secondary text-white"><strong>🔑 Información del Sistema</strong></div>';
         html += '<div class="card-body">';
         html += '<div class="row">';
         
         const systemFields = [
-            { key: 'PKEYHOJAVIDA', label: '🔑 ID Hoja de Vida', icon: '🔑' },
-            { key: 'PKEYASPIRANT', label: '🔑 ID Aspirante', icon: '🔑' },
-            { key: 'createdAt', label: '📅 Fecha de Creación', icon: '📅', isDate: true },
-            { key: 'updatedAt', label: '📅 Última Actualización', icon: '📅', isDate: true }
+            { key: 'PKEYHOJAVIDA', label: '🔑 ID Hoja de Vida' },
+            { key: 'PKEYASPIRANT', label: '🔑 ID Aspirante' },
+            { key: 'createdAt', label: '📅 Fecha de Creación', isDate: true },
+            { key: 'updatedAt', label: '📅 Última Actualización', isDate: true }
         ];
 
         systemFields.forEach(field => {
             let value = hoja[field.key] || 'N/A';
-            const hasError = false;
-            const colorClass = hasError ? 'text-danger fw-bold' : 'text-dark';
-            const bgClass = hasError ? 'bg-danger bg-opacity-10' : '';
-
-            if (field.isDate && value !== 'N/A') {
-                value = this.formatearFecha(value);
+            if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
+                if (field.isDate && value !== 'N/A') {
+                    value = this.formatearFecha(value);
+                }
+                html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
+                html += `<strong class="text-muted">${field.label}:</strong><br>`;
+                html += `<span class="text-dark" style="font-size: 1.1em; font-family: monospace;">${value}</span>`;
+                html += `</div>`;
             }
-
-            html += `<div class="col-md-6 mb-2 p-2 ${bgClass}" style="border-radius: 5px;">`;
-            html += `<strong class="text-muted">${field.label}:</strong><br>`;
-            html += `<span class="${colorClass}" style="font-size: 1.1em; font-family: monospace;">${value}</span>`;
-            html += `</div>`;
         });
+
+        // Detalle de procesamiento si existe
+        if (hoja.DETALLE && hoja.DETALLE !== 'N/A' && hoja.DETALLE !== '') {
+            html += `<div class="col-12 mb-2 p-2" style="border-radius: 5px;">`;
+            html += `<strong class="text-muted">📋 Detalle de Procesamiento:</strong><br>`;
+            html += `<div class="alert alert-secondary mt-2" style="font-size: 0.9em; font-family: monospace;">${hoja.DETALLE}</div>`;
+            html += `</div>`;
+        }
         
         html += '</div></div></div>';
+
+        // Sección de PDF (cuando existe PDF_URL)
+        if (hoja.PDF_URL) {
+            html += '<div class="card mb-3 shadow">';
+            html += '<div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Documento PDF</h6>';
+            html += '</div>';
+            html += '<div class="card-body text-center">';
+
+            // Extraer el nombre del archivo de la URL
+            const filename = hoja.PDF_URL.split('/').pop();
+
+            html += `<div class="mb-3">`;
+            html += `<i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>`;
+            html += `<p class="mt-2 mb-3"><strong>Archivo PDF disponible</strong></p>`;
+            html += `<button type="button" class="btn btn-primary" id="verPdfBtn">`;
+            html += `<i class="fas fa-eye me-2"></i>Ver PDF`;
+            html += `</button>`;
+            html += `</div>`;
+
+            html += '</div></div>';
+        }
+
         html += '</div>';
 
         Swal.fire({
@@ -1071,8 +1141,438 @@ export class HojaVida {
             confirmButtonText: 'Cerrar',
             customClass: {
                 popup: 'swal-wide'
+            },
+            didOpen: () => {
+                // Si hay PDF, configurar el botón
+                if (hoja.PDF_URL) {
+                    const verPdfBtn = document.getElementById('verPdfBtn');
+                    if (verPdfBtn) {
+                        verPdfBtn.onclick = () => this.verPDF(hoja.PDF_URL!);
+                    }
+                }
             }
         });
+    }
+
+    verPDF(pdfUrl: string): void {
+        // Extraer el nombre del archivo de la URL
+        const filename = pdfUrl.split('/').pop();
+
+        if (!filename) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo obtener el nombre del archivo PDF',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        // Mostrar loading
+        Swal.fire({
+            title: 'Cargando PDF...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Llamar al servicio para obtener el PDF
+        this.hojaVidaService.obtenerPDF(filename).subscribe({
+            next: (pdfBlob: Blob) => {
+                // Crear URL del blob
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+
+                // Cerrar el loading y mostrar el PDF en modal dedicado
+                Swal.close();
+
+                // Crear modal dedicado para el PDF
+                const pdfHtml = `
+                    <div style="width: 100%; height: 80vh; display: flex; flex-direction: column;">
+                        <div style="margin-bottom: 10px; text-align: center;">
+                            <strong style="color: #333;">${filename}</strong>
+                        </div>
+                        <iframe 
+                            src="${pdfBlobUrl}" 
+                            style="width: 100%; height: 100%; border: none; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"
+                            type="application/pdf">
+                            <p>Su navegador no soporta la visualización de PDFs. 
+                               <a href="${pdfBlobUrl}" target="_blank">Haga clic aquí para descargar el PDF</a>
+                            </p>
+                        </iframe>
+                    </div>
+                `;
+
+                Swal.fire({
+                    title: 'Visualizador de PDF',
+                    html: pdfHtml,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    customClass: {
+                        popup: 'swal-pdf-viewer',
+                        htmlContainer: 'swal-pdf-container'
+                    },
+                    willClose: () => {
+                        // Limpiar la URL del blob cuando se cierre el modal
+                        URL.revokeObjectURL(pdfBlobUrl);
+                    }
+                });
+            },
+            error: (error) => {
+                console.error('Error al obtener PDF:', error);
+                Swal.fire({
+                    title: 'Error al cargar PDF',
+                    text: 'No se pudo cargar el documento PDF. Verifique que el archivo existe.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
+    ngAfterViewInit(): void {
+        // Los gráficos se inicializarán cuando se seleccione la pestaña de gráficas
+    }
+
+    ngOnDestroy(): void {
+        this.detenerActualizacionAutomatica();
+        this.destruirGraficas();
+    }
+
+    iniciarGraficas(): void {
+        this.cargarDatosGraficas();
+        this.iniciarActualizacionAutomatica();
+    }
+
+    cargarDatosGraficas(): void {
+        this.hojaVidaService.consultarHojasVida().subscribe({
+            next: (response) => {
+                if (response.error === 0 && response.response?.data) {
+                    const datos = response.response.data;
+                    this.procesarDatosParaGraficas(datos);
+                    this.ultimaActualizacion = new Date();
+                    
+                    // Crear gráficas después de un pequeño delay para asegurar que los elementos estén en el DOM
+                    setTimeout(() => {
+                        this.crearGraficas();
+                    }, 100);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudieron cargar los datos para las gráficas'
+                    });
+                }
+            },
+            error: (error) => {
+                console.error('Error al cargar datos para gráficas:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al conectar con el servidor'
+                });
+            }
+        });
+    }
+
+    procesarDatosParaGraficas(datos: any[]): void {
+        this.totalHojasVida = datos.length;
+        
+        // Procesar estadísticas por estado
+        this.estadisticasEstado = {};
+        datos.forEach(item => {
+            const estado = item.ESTADO || 'Sin Estado';
+            this.estadisticasEstado[estado] = (this.estadisticasEstado[estado] || 0) + 1;
+        });
+
+        // Procesar estadísticas por ciudad (top 10)
+        const ciudadCount: any = {};
+        datos.forEach(item => {
+            const ciudad = item.CIUDAD || 'Sin Ciudad';
+            ciudadCount[ciudad] = (ciudadCount[ciudad] || 0) + 1;
+        });
+
+        // Obtener top 10 ciudades
+        this.estadisticasCiudad = Object.entries(ciudadCount)
+            .sort(([,a], [,b]) => (b as number) - (a as number))
+            .slice(0, 10)
+            .reduce((obj, [key, value]) => {
+                obj[key] = value;
+                return obj;
+            }, {} as any);
+    }
+
+    crearGraficas(): void {
+        this.destruirGraficas();
+        this.crearGraficaTorta();
+        this.crearGraficaBarras();
+        this.crearGraficaCiudades();
+    }
+
+    crearGraficaTorta(): void {
+        if (!this.pieChartRef?.nativeElement) return;
+
+        const ctx = this.pieChartRef.nativeElement.getContext('2d');
+        if (!ctx) return;
+
+        const labels = Object.keys(this.estadisticasEstado);
+        const data = Object.values(this.estadisticasEstado);
+        const colors = this.generarColores(labels.length);
+
+        const config: ChartConfiguration = {
+            type: 'pie' as ChartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data as number[],
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        this.pieChart = new Chart(ctx, config);
+    }
+
+    crearGraficaBarras(): void {
+        if (!this.barChartRef?.nativeElement) return;
+
+        const ctx = this.barChartRef.nativeElement.getContext('2d');
+        if (!ctx) return;
+
+        const labels = Object.keys(this.estadisticasEstado);
+        const data = Object.values(this.estadisticasEstado);
+        const colors = this.generarColores(labels.length);
+
+        const config: ChartConfiguration = {
+            type: 'bar' as ChartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: data as number[],
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        this.barChart = new Chart(ctx, config);
+    }
+
+    crearGraficaCiudades(): void {
+        if (!this.cityChartRef?.nativeElement) return;
+
+        const ctx = this.cityChartRef.nativeElement.getContext('2d');
+        if (!ctx) return;
+
+        const labels = Object.keys(this.estadisticasCiudad);
+        const data = Object.values(this.estadisticasCiudad);
+        const colors = this.generarColores(labels.length);
+
+        const config: ChartConfiguration = {
+            type: 'bar' as ChartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cantidad',
+                    data: data as number[],
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y' as const,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        };
+
+        this.cityChart = new Chart(ctx, config);
+    }
+
+    generarColores(cantidad: number): string[] {
+        const colores = [
+            'rgba(54, 162, 235, 0.8)',   // Azul
+            'rgba(255, 99, 132, 0.8)',   // Rojo
+            'rgba(255, 205, 86, 0.8)',   // Amarillo
+            'rgba(75, 192, 192, 0.8)',   // Verde agua
+            'rgba(153, 102, 255, 0.8)',  // Púrpura
+            'rgba(255, 159, 64, 0.8)',   // Naranja
+            'rgba(199, 199, 199, 0.8)',  // Gris
+            'rgba(83, 102, 255, 0.8)',   // Azul índigo
+            'rgba(255, 99, 255, 0.8)',   // Magenta
+            'rgba(99, 255, 132, 0.8)'    // Verde lima
+        ];
+
+        const resultado = [];
+        for (let i = 0; i < cantidad; i++) {
+            resultado.push(colores[i % colores.length]);
+        }
+        return resultado;
+    }
+
+    iniciarActualizacionAutomatica(): void {
+        this.detenerActualizacionAutomatica();
+        this.intervalId = setInterval(() => {
+            if (this.activeTab === 'graficas') {
+                this.cargarDatosGraficas();
+            }
+        }, 5000); // Actualizar cada 5 segundos
+    }
+
+    detenerActualizacionAutomatica(): void {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+
+    destruirGraficas(): void {
+        if (this.pieChart) {
+            this.pieChart.destroy();
+            this.pieChart = null;
+        }
+        if (this.barChart) {
+            this.barChart.destroy();
+            this.barChart = null;
+        }
+        if (this.cityChart) {
+            this.cityChart.destroy();
+            this.cityChart = null;
+        }
+    }
+
+    descargarExcel(): void {
+        this.isLoadingConsulta = true;
+        
+        if (this.hojasVidaExistentes.length === 0) {
+            // Si no hay datos cargados, cargarlos primero
+            this.hojaVidaService.consultarHojasVida().subscribe({
+                next: (response) => {
+                    if (response.error === 0 && response.response?.data) {
+                        this.generarExcel(response.response.data);
+                        this.isLoadingConsulta = false;
+                    } else {
+                        this.isLoadingConsulta = false;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudieron cargar los datos para exportar'
+                        });
+                    }
+                },
+                error: (error) => {
+                    console.error('Error al cargar datos para Excel:', error);
+                    this.isLoadingConsulta = false;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error al conectar con el servidor'
+                    });
+                }
+            });
+        } else {
+            this.generarExcel(this.hojasVidaExistentes);
+            this.isLoadingConsulta = false;
+        }
+    }
+
+    generarExcel(datos: any[]): void {
+        try {
+            // Filtrar y limpiar los datos (excluir PDF_URL y USUARIO_ID)
+            const datosLimpios = datos.map(item => {
+                const { PDF_URL, USUARIO_ID, ...resto } = item;
+                return resto;
+            });
+
+            // Crear el libro de trabajo
+            const ws = XLSX.utils.json_to_sheet(datosLimpios);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Hojas de Vida');
+
+            // Configurar el ancho de las columnas
+            const colWidths = Object.keys(datosLimpios[0] || {}).map(() => ({ wch: 20 }));
+            ws['!cols'] = colWidths;
+
+            // Generar el archivo
+            const fecha = new Date().toISOString().split('T')[0];
+            const nombreArchivo = `hojas_de_vida_${fecha}.xlsx`;
+            
+            XLSX.writeFile(wb, nombreArchivo);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Descarga Exitosa',
+                text: `El archivo ${nombreArchivo} se ha descargado correctamente`,
+                timer: 3000,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+            console.error('Error al generar Excel:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al generar el archivo Excel'
+            });
+        }
     }
 
 }

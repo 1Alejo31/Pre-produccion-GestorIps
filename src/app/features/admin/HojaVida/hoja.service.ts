@@ -96,6 +96,19 @@ export class RegisterHojaVidaService {
         return emailRegex.test(email);
     }
 
+    // Obtener PDF
+    obtenerPDF(filename: string): Observable<Blob> {
+        const token = localStorage.getItem('token') ?? '';
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${token}`
+        });
+
+        return this.http.get(`http://3.142.186.227:3000/api/pdf/pdf/${filename}`, {
+            headers,
+            responseType: 'blob'
+        });
+    }
+
     encryptAES = (text: string, key: string) => {
         return CryptoJS.AES.encrypt(text, key).toString();
     };

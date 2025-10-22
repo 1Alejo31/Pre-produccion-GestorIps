@@ -2,21 +2,27 @@
     <!-- Pestañas para alternar entre formulario individual, carga masiva y consulta -->
     <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'individual'"
-                (click)="setActiveTab('individual')" type="button">
+            <button class="nav-link" [class.active]="activeTab === 'individual'" (click)="setActiveTab('individual')"
+                type="button">
                 <i class="fas fa-user"></i> Registro Individual
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'masivo'"
-                (click)="setActiveTab('masivo')" type="button">
+            <button class="nav-link" [class.active]="activeTab === 'masivo'" (click)="setActiveTab('masivo')"
+                type="button">
                 <i class="fas fa-file-excel"></i> Carga Masiva
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'consulta'"
-                (click)="setActiveTab('consulta')" type="button">
+            <button class="nav-link" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')"
+                type="button">
                 <i class="fas fa-search"></i> Consultar Hojas de Vida
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'graficas'" (click)="setActiveTab('graficas')"
+                type="button">
+                <i class="fas fa-chart-pie"></i> Gráficas
             </button>
         </li>
     </ul>
@@ -759,16 +765,19 @@
 
                 <div class="card-body">
                     <!-- Loader -->
-                    <div *ngIf="isLoadingConsulta" class="text-center py-5">
+                    @if (isLoadingConsulta) {
+                    <div class="text-center py-5">
                         <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
                         <h5 class="text-muted">Consultando hojas de vida...</h5>
                         <p class="text-muted">Por favor espere un momento</p>
                     </div>
+                    }
 
                     <!-- Contenido principal -->
-                    <div *ngIf="!isLoadingConsulta">
+                    @if (!isLoadingConsulta) {
+                    <div>
                         <!-- Header con información y buscador -->
                         <div class="row mb-4">
                             <div class="col-md-6 d-flex align-items-center">
@@ -968,6 +977,153 @@
                             </nav>
                         </div>
                         }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+
+        <!-- Pestaña de Gráficas -->
+        @if (activeTab === 'graficas') {
+        <div class="tab-pane fade" [class.show]="activeTab === 'graficas'" [class.active]="activeTab === 'graficas'">
+
+            <!-- Controles superiores -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">
+                                <i class="fas fa-sync-alt"></i> Actualización Automática
+                            </h5>
+                            <p class="card-text">
+                                Las gráficas se actualizan cada 5 segundos
+                            </p>
+                            <div class="badge bg-success">
+                                <i class="fas fa-circle"></i> Activo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">
+                                <i class="fas fa-download"></i> Exportar Datos
+                            </h5>
+                            <p class="card-text">
+                                Descargar información completa en Excel
+                            </p>
+                            <button class="btn btn-success" (click)="descargarExcel()" [disabled]="isLoadingGraficas">
+                                @if (isLoadingGraficas) {
+                                <i class="fas fa-spinner fa-spin"></i> Descargando...
+                                } @else {
+                                <i class="fas fa-file-excel"></i> Descargar Excel
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Estadísticas generales -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h3>{{ totalHojasVida }}</h3>
+                            <p class="mb-0">Total Hojas de Vida</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h3>{{ estadisticasEstado.PROCESADO || 0 }}</h3>
+                            <p class="mb-0">Procesadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h3>{{ estadisticasEstado['EN ESPERA'] || 0 }}</h3>
+                            <p class="mb-0">En Espera</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h3>{{ estadisticasEstado['EN GESTION'] || 0 }}</h3>
+                            <p class="mb-0">En Gestión</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficas -->
+            <div class="row">
+                <!-- Gráfica de Torta -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-pie"></i> Distribución por Estado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas #pieChart></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfica de Barras -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar"></i> Cantidad por Estado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas #barChart></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfica de Barras por Ciudad -->
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map-marker-alt"></i> Distribución por Ciudad (Top 10)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas #cityChart></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Última actualización -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Última actualización:</strong> {{ ultimaActualizacion | date:'dd/MM/yyyy HH:mm:ss' }}
                     </div>
                 </div>
             </div>
