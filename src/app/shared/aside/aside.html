@@ -30,14 +30,18 @@
         </a>
 
         <!-- Gestor Hoja de Vida - Administrador, Supervisor y Cliente -->
-        <a *ngIf="canViewGestorHojaVida" class="menu-item d-grid" [class.active]="activePanel === 'hojaVida'" (click)="openHojaVida()">
+        <a *ngIf="canViewGestorHojaVida" class="menu-item d-grid" [class.active]="activePanel === 'hojaVida'"
+            (click)="openHojaVida()">
             <span class="icon">📋</span>
             <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">Gestor Hoja de Vida</span>
         </a>
 
         <!-- Sección de aplicaciones - Solo mostrar si hay al menos una opción visible -->
-        <div *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida" class="menu-section text-uppercase">Applications</div>
-        <a *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida" class="menu-item d-grid" role="button">
+        <div *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida"
+            class="menu-section text-uppercase">Applications</div>
+        <a *ngIf="canViewGestorUsuarios || canViewAdminIps || canViewIpsGestion || canViewGestorHojaVida"
+            class="menu-item d-grid" [class.active]="activePanel === 'aplicaciones'" (click)="openAplicaciones()"
+            role="button">
             <span class="icon">📦</span>
             <span class="text">Aplicaciones</span>
         </a>

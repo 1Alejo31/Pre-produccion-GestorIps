@@ -116,4 +116,11 @@ export class Aside implements OnInit {
             this.selectPanel.emit('hojaVida');
         }
     }
+
+    openAplicaciones() {
+        // Las aplicaciones están disponibles para todos los usuarios que tengan al menos un permiso
+        if (this.canViewGestorUsuarios || this.canViewAdminIps || this.canViewIpsGestion || this.canViewGestorHojaVida) {
+            this.selectPanel.emit('aplicaciones');
+        }
+    }
 }

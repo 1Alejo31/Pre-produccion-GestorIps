@@ -106,6 +106,9 @@
 
         <!-- Panel Formulario de Hoja de Vida - Administrador, Supervisor y Cliente -->
         <app-hoja-vida *ngIf="activePanel === 'hojaVida' && canViewGestorHojaVida"></app-hoja-vida>
+
+        <!-- Panel Aplicaciones - Disponible para todos los usuarios con permisos -->
+        <app-aplicaciones *ngIf="activePanel === 'aplicaciones'"></app-aplicaciones>
     </main>
 </div>
 

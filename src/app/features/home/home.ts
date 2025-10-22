@@ -9,8 +9,7 @@ import { HojaVida } from "../../features/admin/HojaVida/hoja-vida";
 import { IpsGestion } from "../../features/admin/ipsGestion/ips-gestion";
 import Swal from 'sweetalert2';
 import { GestorIps } from "../../features/admin/gestorIps/gestor-ips";
-
-
+import { Aplicaciones } from "../../features/admin/aplicaciones/aplicaciones";
 
 interface User {
     perfil: string;
@@ -25,7 +24,7 @@ interface User {
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, Topbar, Aside, RegistroUsuarios, GestorIps, HojaVida, IpsGestion],
+    imports: [CommonModule, Topbar, Aside, RegistroUsuarios, GestorIps, HojaVida, IpsGestion, Aplicaciones],
     templateUrl: './home.html',
     styleUrls: ['./home.css'],
 })
@@ -46,13 +45,13 @@ export class Home implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-        // Verificar autenticación inicial
+        // Verificar autenticaci?n inicial
         if (!this.authService.isAuthenticated()) {
             this.authService.logout();
             return;
         }
 
-        // Obtener información del usuario
+        // Obtener informaci?n del usuario
         this.user = this.authService.getUserInfo();
 
         if (!this.user) {
@@ -63,12 +62,12 @@ export class Home implements OnInit, OnDestroy {
         // Establecer permisos basados en el perfil
         this.setPermissions();
 
-        // Configurar verificación periódica del token cada 2 minutos
+        // Configurar verificaci?n peri?dica del token cada 2 minutos
         this.tokenCheckInterval = setInterval(() => {
             this.checkAuthStatus();
         }, 120000); // 2 minutos
 
-        // Verificación inicial
+        // Verificaci?n inicial
         this.checkAuthStatus();
     }
 
@@ -111,7 +110,7 @@ export class Home implements OnInit, OnDestroy {
                 break;
 
             case 'usuario':
-                // Usuario solo puede ver IPS Gestión
+                // Usuario solo puede ver IPS Gesti?n
                 this.canViewIpsGestion = true;
                 break;
 
@@ -138,7 +137,7 @@ export class Home implements OnInit, OnDestroy {
     }
 
     /**
-     * Verifica si el usuario puede acceder a un panel específico
+     * Verifica si el usuario puede acceder a un panel espec?fico
      */
     canAccessPanel(panel: string): boolean {
         switch (panel) {
@@ -150,6 +149,8 @@ export class Home implements OnInit, OnDestroy {
                 return this.canViewIpsGestion;
             case 'hojaVida':
                 return this.canViewGestorHojaVida;
+            case 'aplicaciones':
+                return this.canViewGestorUsuarios || this.canViewAdminIps || this.canViewIpsGestion || this.canViewGestorHojaVida;
             case 'dashboard':
                 return true; // Dashboard siempre accesible
             default:
@@ -169,17 +170,17 @@ export class Home implements OnInit, OnDestroy {
         this.isSidebarCollapsed = !this.isSidebarCollapsed;
     }
 
-    activePanel: 'dashboard' | 'registroUsuarios' | 'gestorIps' | 'hojaVida' | 'ipsGestion' = 'dashboard';
+    activePanel: 'dashboard' | 'registroUsuarios' | 'gestorIps' | 'hojaVida' | 'ipsGestion' | 'aplicaciones' = 'dashboard';
 
     activatePanel(panel: string) {
-        // Validar que el panel sea válido y que el usuario tenga permisos
-        if ((panel === 'dashboard' || panel === 'registroUsuarios' || panel === 'gestorIps' || panel === 'hojaVida' || panel === 'ipsGestion') && this.canAccessPanel(panel)) {
+        // Validar que el panel sea v?lido y que el usuario tenga permisos
+        if ((panel === 'dashboard' || panel === 'registroUsuarios' || panel === 'gestorIps' || panel === 'hojaVida' || panel === 'ipsGestion' || panel === 'aplicaciones') && this.canAccessPanel(panel)) {
             this.activePanel = panel;
         } else if (!this.canAccessPanel(panel)) {
             // Mostrar mensaje de acceso denegado
             Swal.fire({
                 title: 'Acceso Denegado',
-                text: 'No tienes permisos para acceder a esta sección.',
+                text: 'No tienes permisos para acceder a esta secci?n.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido'
             });
@@ -193,8 +194,8 @@ export class Home implements OnInit, OnDestroy {
     checkAuthStatus(): void {
         if (!this.authService.isAuthenticated()) {
             Swal.fire({
-                title: 'Sesión Inválida',
-                text: 'Tu sesión ha expirado. Serás redirigido al login.',
+                title: 'Sesi?n Inv?lida',
+                text: 'Tu sesi?n ha expirado. Ser?s redirigido al login.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido'
             }).then(() => {
