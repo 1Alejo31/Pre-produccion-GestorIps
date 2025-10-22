@@ -995,14 +995,14 @@
                     <div class="card shadow-sm">
                         <div class="card-body text-center">
                             <h5 class="card-title">
-                                <i class="fas fa-sync-alt"></i> Actualización Automática
+                                <i class="fas fa-sync-alt"></i> Actualizar Gráficas
                             </h5>
                             <p class="card-text">
-                                Las gráficas se actualizan cada 5 segundos
+                                Actualiza manualmente los datos de las gráficas
                             </p>
-                            <div class="badge bg-success">
-                                <i class="fas fa-circle"></i> Activo
-                            </div>
+                            <button class="btn btn-primary" (click)="cargarDatosGraficas()">
+                                <i class="fas fa-sync-alt"></i> Actualizar Ahora
+                            </button>
                         </div>
                     </div>
                 </div>

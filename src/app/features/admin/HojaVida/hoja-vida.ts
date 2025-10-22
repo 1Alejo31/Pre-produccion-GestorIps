@@ -1240,13 +1240,12 @@ export class HojaVida implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.detenerActualizacionAutomatica();
+        // this.detenerActualizacionAutomatica(); // Deshabilitado
         this.destruirGraficas();
     }
 
     iniciarGraficas(): void {
         this.cargarDatosGraficas();
-        this.iniciarActualizacionAutomatica();
     }
 
     cargarDatosGraficas(): void {
@@ -1468,21 +1467,22 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         return resultado;
     }
 
-    iniciarActualizacionAutomatica(): void {
-        this.detenerActualizacionAutomatica();
-        this.intervalId = setInterval(() => {
-            if (this.activeTab === 'graficas') {
-                this.cargarDatosGraficas();
-            }
-        }, 5000); // Actualizar cada 5 segundos
-    }
+    // Métodos de actualización automática deshabilitados para evitar recarga constante
+    // iniciarActualizacionAutomatica(): void {
+    //     this.detenerActualizacionAutomatica();
+    //     this.intervalId = setInterval(() => {
+    //         if (this.activeTab === 'graficas') {
+    //             this.cargarDatosGraficas();
+    //         }
+    //     }, 5000); // Actualizar cada 5 segundos
+    // }
 
-    detenerActualizacionAutomatica(): void {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
-    }
+    // detenerActualizacionAutomatica(): void {
+    //     if (this.intervalId) {
+    //         clearInterval(this.intervalId);
+    //         this.intervalId = null;
+    //     }
+    // }
 
     destruirGraficas(): void {
         if (this.pieChart) {
