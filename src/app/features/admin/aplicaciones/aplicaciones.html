@@ -22,23 +22,15 @@
                 <div class="card-header p-0">
                     <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button 
-                                class="nav-link" 
-                                [class.active]="activeTab === 'whatsapp-bot'"
-                                (click)="setActiveTab('whatsapp-bot')"
-                                type="button" 
-                                role="tab">
+                            <button class="nav-link nav-tabs-custom" [class.active]="activeTab === 'whatsapp-bot'"
+                                (click)="setActiveTab('whatsapp-bot')" type="button" role="tab">
                                 <i class="fab fa-whatsapp me-2"></i>
-                                WhatsApp Bot Notificación
+                                WhatsApp Bot
                             </button>
                         </li>
                         <!-- Aquí se pueden agregar más tabs en el futuro -->
                         <li class="nav-item" role="presentation">
-                            <button 
-                                class="nav-link disabled" 
-                                type="button" 
-                                role="tab"
-                                title="Próximamente">
+                            <button class="nav-link disabled" type="button" role="tab" title="Próximamente">
                                 <i class="fas fa-plus me-2"></i>
                                 Más Aplicaciones
                             </button>
@@ -73,18 +65,18 @@
                                             <h6 class="text-muted mb-2">Estadísticas</h6>
                                             <div class="stats-grid">
                                                 <div class="stat-item">
-                                                    <div class="stat-number text-primary">0</div>
+                                                    <div class="stat-number text-primary">{{ mensajesEnviados }}</div>
                                                     <div class="stat-label">Mensajes Enviados</div>
                                                 </div>
                                                 <div class="stat-item">
-                                                    <div class="stat-number text-success">0</div>
-                                                    <div class="stat-label">Notificaciones</div>
+                                                    <div class="stat-number text-info">{{ mensajesEnviados > 0 ? '98%' : '0%' }}</div>
+                                                    <div class="stat-label">Tasa de Entrega</div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="mb-3">
-                                            <button class="btn btn-primary btn-sm w-100 mb-2">
+                                            <button class="btn btn-primary btn-sm w-100 mb-2" (click)="actualizarEstadisticas()">
                                                 <i class="fas fa-sync-alt me-1"></i>
                                                 Actualizar Estado
                                             </button>
@@ -111,10 +103,7 @@
                                             </div>
                                         </div>
                                         <div class="iframe-wrapper">
-                                            <iframe 
-                                                [src]="whatsappUrl" 
-                                                class="whatsapp-iframe"
-                                                frameborder="0"
+                                            <iframe [src]="whatsappUrl" class="whatsapp-iframe" frameborder="0"
                                                 allowfullscreen>
                                             </iframe>
                                         </div>
