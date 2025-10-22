@@ -337,17 +337,17 @@ export class IpsGestion implements OnInit {
             html += '</div></div></div>';
         }
 
-        // Sección de PDF (solo para casos EN GESTION)
-        if (hoja.ESTADO?.toLowerCase() === 'en gestion' && hoja.PDF_URL) {
+        // Sección de PDF (cuando existe PDF_URL)
+        if (hoja.PDF_URL) {
             html += '<div class="card mb-3">';
             html += '<div class="card-header bg-info text-white">';
             html += '<h6 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Documento PDF</h6>';
             html += '</div>';
             html += '<div class="card-body text-center">';
-            
+
             // Extraer el nombre del archivo de la URL
             const filename = hoja.PDF_URL.split('/').pop();
-            
+
             html += `<div class="mb-3">`;
             html += `<i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>`;
             html += `<p class="mt-2 mb-3"><strong>Archivo PDF disponible`;
@@ -355,7 +355,7 @@ export class IpsGestion implements OnInit {
             html += `<i class="fas fa-eye me-2"></i>Ver PDF`;
             html += `</button>`;
             html += `</div>`;
-            
+
             html += '</div></div>';
         }
 
@@ -372,8 +372,8 @@ export class IpsGestion implements OnInit {
                 popup: 'swal-wide'
             },
             didOpen: () => {
-                // Si hay PDF y el estado es EN GESTION, configurar el botón
-                if (hoja.ESTADO?.toLowerCase() === 'en gestion' && hoja.PDF_URL) {
+                // Si hay PDF, configurar el botón
+                if (hoja.PDF_URL) {
                     const verPdfBtn = document.getElementById('verPdfBtn');
                     if (verPdfBtn) {
                         verPdfBtn.onclick = () => this.verPDF(hoja.PDF_URL!);
@@ -940,7 +940,7 @@ export class IpsGestion implements OnInit {
 
     formatearFechaHora(fechaHora: string | undefined): string {
         if (!fechaHora) return 'N/A';
-        
+
         try {
             const fecha = new Date(fechaHora);
             return fecha.toLocaleString('es-CO', {
@@ -958,7 +958,7 @@ export class IpsGestion implements OnInit {
     verPDF(pdfUrl: string): void {
         // Extraer el nombre del archivo de la URL
         const filename = pdfUrl.split('/').pop();
-        
+
         if (!filename) {
             Swal.fire({
                 title: 'Error',
@@ -984,10 +984,10 @@ export class IpsGestion implements OnInit {
             next: (pdfBlob: Blob) => {
                 // Crear URL del blob
                 const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-                
+
                 // Cerrar el loading y mostrar el PDF en modal dedicado
                 Swal.close();
-                
+
                 // Crear modal dedicado para el PDF
                 const pdfHtml = `
                     <div style="width: 100%; height: 80vh; display: flex; flex-direction: column;">
