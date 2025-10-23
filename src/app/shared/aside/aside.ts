@@ -21,6 +21,9 @@ export class Aside implements OnInit {
     canViewIpsGestion: boolean = false;
     canViewGestorHojaVida: boolean = false;
 
+    // Nombre del usuario
+    userName: string = '';
+
     constructor(
         private router: Router,
         private authService: AuthService
@@ -39,8 +42,12 @@ export class Aside implements OnInit {
         if (!userInfo || !userInfo.perfil) {
             // Si no hay información del usuario, no mostrar nada
             this.resetPermissions();
+            this.userName = '';
             return;
         }
+
+        // Obtener el nombre del usuario
+        this.userName = userInfo.nombre || userInfo.usuario || 'Usuario';
 
         const perfil = userInfo.perfil.toLowerCase();
         const permiso = userInfo.permiso?.toLowerCase() || '';

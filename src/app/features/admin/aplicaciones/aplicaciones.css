@@ -1,7 +1,7 @@
 /* Estilos para el componente Aplicaciones */
 
 .bg-gradient-primary {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
 }
 
 .nav-tabs-custom {
@@ -19,13 +19,13 @@
 }
 
 .nav-tabs-custom .nav-link:hover {
-    color: #007bff;
+    color: #B3945B;
     background-color: #f8f9fa;
     border-color: transparent;
 }
 
 .nav-tabs-custom .nav-link.active {
-    color: #007bff;
+    color: #B3945B;
     background-color: white;
     border-color: transparent;
     font-weight: 600;
@@ -38,7 +38,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background-color: #007bff;
+    background-color: #B3945B;
 }
 
 .nav-tabs-custom .nav-link.disabled {
@@ -170,7 +170,7 @@
 /* Estados de hover para botones */
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 4px 8px #b3945b83;
 }
 
 .btn-outline-secondary:hover {

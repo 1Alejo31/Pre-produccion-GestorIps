@@ -9,19 +9,19 @@
 }
 
 .card-header {
-    background: linear-gradient(135deg, #69B5D4 0%, #5a9fd4 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #b3945b98 100%);
     color: white;
     border-radius: 10px 10px 0 0 !important;
     border: none;
 }
 
 .nav-tabs {
-    border-bottom: 2px solid #69B5D4;
+    border-bottom: 2px solid #B3945B;
 }
 
 .nav-tabs .nav-link {
     border: none;
-    color: #69B5D4;
+    color: #B3945B;
     font-weight: 500;
     padding: 12px 20px;
     margin-right: 5px;
@@ -35,9 +35,9 @@
 }
 
 .nav-tabs .nav-link.active {
-    background-color: #69B5D4;
+    background-color: #B3945B;
     color: white;
-    border-bottom: 2px solid #69B5D4;
+    border-bottom: 2px solid #B3945B;
 }
 
 .table {
@@ -107,25 +107,25 @@
 }
 
 .form-control:focus {
-    border-color: #69B5D4;
+    border-color: #B3945B;
     box-shadow: 0 0 0 0.2rem rgba(105, 181, 212, 0.25);
 }
 
 .pagination .page-link {
-    color: #69B5D4;
+    color: #B3945B;
     border-color: #dee2e6;
     padding: 8px 12px;
 }
 
 .pagination .page-link:hover {
     background-color: rgba(105, 181, 212, 0.1);
-    border-color: #69B5D4;
+    border-color: #B3945B;
     color: #5a9fd4;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #69B5D4;
-    border-color: #69B5D4;
+    background-color: #B3945B;
+    border-color: #B3945B;
     color: white;
 }
 
@@ -237,7 +237,7 @@
 }
 
 :global(.swal2-title) {
-    color: #69B5D4;
+    color: #B3945B;
     font-weight: 600;
 }
 
@@ -255,7 +255,7 @@
 }
 
 :global(.swal2-html-container .form-control:focus) {
-    border-color: #69B5D4;
+    border-color: #B3945B;
     box-shadow: 0 0 0 0.2rem rgba(105, 181, 212, 0.25);
 }
 

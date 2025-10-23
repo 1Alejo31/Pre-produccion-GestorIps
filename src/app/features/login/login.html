@@ -1,9 +1,15 @@
-<div class="login-container">
+<div class="login-container" (mousemove)="onMouseMove($event)">
+    <!-- Imagen flotante que sigue el mouse -->
+    <div class="floating-image" [style.transform]="imageTransform">
+        <img src="/assets/images/man.png" alt="Floating Man" />
+    </div>
+    
     <div class="container py-4">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-5 offset-md-7">
+            
+            <div class="col-12 col-md-4 offset-md-9">
                 <div class="login-form">
-                    <img src="/assets/images/Logo3.png" alt="" class="logo">
+                    <img src="/assets/images/logow.png" alt="" class="logo">
                     <form (ngSubmit)="login()" autocomplete="on">
                         <div class="form-group mt-3">
                             <label for="username">Usuario</label>
@@ -19,16 +25,17 @@
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn mt-4"
-                                style="background-color: #69B5D4; color: white;">Iniciar Sesion</button>
+                                style="background-color: #B3945B; color: white;">Iniciar Sesion</button>
                         </div>
                     </form>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
 <footer class="fixed-bottom">
     <p class="mb-0 py-2" style="color: #ffffff;">
-        &copy; 2025 GestorIps. Todos los derechos reservados por @Aguisu.com.
+        &copy; 2025 Aguisu. Todos los derechos reservados por @Aguisu.com.
     </p>
 </footer>

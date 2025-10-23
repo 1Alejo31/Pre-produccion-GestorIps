@@ -5,12 +5,12 @@
 
 /* Estilos para las pestañas */
 .nav-tabs {
-    border-bottom: 2px solid #69B5D4 !important;
+    border-bottom: 2px solid #B3945B !important;
 }
 
 .nav-tabs .nav-link {
     border: none !important;
-    color: #69B5D4 !important;
+    color: #B3945B !important;
     font-weight: 500;
     padding: 12px 20px;
     margin-right: 5px;
@@ -21,15 +21,15 @@
 
 .nav-tabs .nav-link:hover {
     background-color: rgba(105, 181, 212, 0.1) !important;
-    color: #5a9fd4 !important;
+    color: #B3945B !important;
     border-color: transparent !important;
 }
 
 .nav-tabs .nav-link.active {
-    background-color: #69B5D4 !important;
+    background-color: #B3945B !important;
     color: white !important;
-    border-bottom: 2px solid #69B5D4 !important;
-    border-color: transparent transparent #69B5D4 transparent !important;
+    border-bottom: 2px solid #B3945B !important;
+    border-color: transparent transparent #B3945B transparent !important;
 }
 
 /* Estilos para las tarjetas */
@@ -40,7 +40,7 @@
 }
 
 .card-header {
-    background: linear-gradient(135deg, #69B5D4 0%, #5a9fd4 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
     color: white;
     border: none;
     padding: 1rem 1.5rem;
@@ -89,35 +89,35 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #69B5D4 0%, #5a9fd4 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
     border: none;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #5a9fd4 0%, #4a8fc4 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(105, 181, 212, 0.3);
+    box-shadow: 0 4px 8px #b3945b70;
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #28a745 0%, #B3945B 100%);
     border: none;
 }
 
 .btn-success:hover {
-    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+    background: linear-gradient(135deg, #20c997 0%, #B3945B 100%);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
 .btn-outline-primary {
-    color: #69B5D4;
-    border-color: #69B5D4;
+    color: #B3945B;
+    border-color: #B3945B;
 }
 
 .btn-outline-primary:hover {
-    background-color: #69B5D4;
-    border-color: #69B5D4;
+    background-color: #B3945B;
+    border-color: #B3945B;
     color: white;
 }
 
@@ -135,7 +135,7 @@
 }
 
 .form-control:focus {
-    border-color: #69B5D4;
+    border-color: #B3945B;
     box-shadow: 0 0 0 0.2rem rgba(105, 181, 212, 0.25);
 }
 
@@ -145,7 +145,7 @@
 }
 
 .page-link {
-    color: #69B5D4;
+    color: #B3945B;
     border-color: #dee2e6;
     border-radius: 6px;
     margin: 0 2px;
@@ -153,14 +153,14 @@
 }
 
 .page-link:hover {
-    color: #0056b3;
+    color: #B3945B;
     background-color: rgba(105, 181, 212, 0.1);
-    border-color: #69B5D4;
+    border-color: #B3945B;
 }
 
 .page-item.active .page-link {
-    background-color: #69B5D4;
-    border-color: #69B5D4;
+    background-color: #B3945B;
+    border-color: #B3945B;
     color: white;
 }
 
@@ -222,7 +222,7 @@
 .alert-info {
     background-color: rgba(105, 181, 212, 0.1);
     color: #0c5460;
-    border-left: 4px solid #69B5D4;
+    border-left: 4px solid #B3945B;
 }
 
 /* Estilos para el detalle en SweetAlert */
@@ -263,13 +263,13 @@
 
 /* Estilos específicos para el botón ver detalle */
 .btn-ver-detalle {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
     border: none;
     color: white;
 }
 
 .btn-ver-detalle:hover {
-    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    background: linear-gradient(135deg, #B3945B 0%, #B3945B 100%);
     color: white;
 }
 

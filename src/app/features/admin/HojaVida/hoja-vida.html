@@ -474,7 +474,7 @@
                             <!-- Controles de búsqueda y estadísticas -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <h6 class="text-primary mb-1">
+                                    <h6 class="mb-1" style="color: #B3945B;">
                                         <i class="fas fa-chart-bar me-2"></i>Registros en Previsualización
                                     </h6>
                                     <div class="d-flex align-items-center flex-wrap gap-2">
@@ -782,11 +782,12 @@
                         <div class="row mb-4">
                             <div class="col-md-6 d-flex align-items-center">
                                 <div class="info-section">
-                                    <h6 class="text-primary mb-1">
+                                    <h6 class="mb-1" style="color: #B3945B;">
                                         <i class="fas fa-chart-bar me-2"></i>Registros Encontrados
                                     </h6>
+                                    <br>
                                     <div class="d-flex align-items-center">
-                                        <span class="badge bg-primary fs-6 me-2">{{ hojasVidaFiltradas.length }}</span>
+                                        <span class="badge fs-6 me-2" style="background-color: #B3945B;">{{ hojasVidaFiltradas.length }}</span>
                                         <span class="text-muted">hojas de vida</span>
                                     </div>
                                 </div>
@@ -848,8 +849,8 @@
                                         @for (hoja of hojasVidaPaginadas; track hoja.DOCUMENTO) {
                                         <tr>
                                             <td>
-                                                <span class="d-inline-block text-truncate fw-bold text-primary"
-                                                    style="max-width: 120px;" [title]="hoja.DOCUMENTO">
+                                                <span class="d-inline-block text-truncate fw-bold"
+                                                    style="max-width: 120px; color: #B3945B;" [title]="hoja.DOCUMENTO">
                                                     {{ hoja.DOCUMENTO }}
                                                 </span>
                                             </td>

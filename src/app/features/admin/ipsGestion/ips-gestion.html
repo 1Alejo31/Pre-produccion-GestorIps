@@ -71,7 +71,8 @@
                                     <th>Nombre Completo</th>
                                     <th>Género</th>
                                     <th>Correo</th>
-                                    <th>Telefono</th>
+                                    <th>Celular</th>
+                                    <th>Ciudad</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -83,7 +84,8 @@
                                     <td>{{ hoja.NOMBRE }} {{ hoja.PRIMER_APELLIDO }} {{ hoja.SEGUNDO_APELLIDO }}</td>
                                     <td>{{ hoja.GENERO }}</td>
                                     <td>{{ hoja.CORREO }}</td>
-                                    <td>{{ hoja.TELEFONO }}</td>
+                                    <td>{{ hoja.CELULAR }}</td>
+                                    <td>{{ hoja.CIUDAD }}</td>
                                     <td>
                                         <span class="badge bg bg-success" [class]="getEstadoBadgeClass(hoja.ESTADO)">
                                             <span class="me-1">●</span>

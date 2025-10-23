@@ -22,6 +22,11 @@ export class Login {
     errorMessage: ''
   }
 
+  // Propiedades para el efecto de seguimiento del mouse
+  imageTransform = 'translate(-50%, -50%)';
+  private mouseX = 0;
+  private mouseY = 0;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -100,5 +105,26 @@ export class Login {
         });
       }
     });
+  }
+
+  // Método para manejar el movimiento del mouse
+  onMouseMove(event: MouseEvent): void {
+    const container = event.currentTarget as HTMLElement;
+    const rect = container.getBoundingClientRect();
+    
+    // Calcular la posición relativa del mouse
+    this.mouseX = event.clientX - rect.left;
+    this.mouseY = event.clientY - rect.top;
+    
+    // Calcular el desplazamiento basado en la posición del mouse
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Crear un efecto de parallax suave (movimiento reducido)
+    const moveX = (this.mouseX - centerX) * 0.05; // Factor de 0.05 para movimiento sutil
+    const moveY = (this.mouseY - centerY) * 0.05;
+    
+    // Actualizar la transformación de la imagen
+    this.imageTransform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
   }
 }

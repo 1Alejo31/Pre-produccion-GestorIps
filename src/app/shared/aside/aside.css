@@ -1,3 +1,32 @@
+/* Estilos para el sidebar con imagen de fondo */
+.sidebar {
+    background-image: url('/assets/images/icono3.png');
+    background-size: 350px 450px; /* Tamaño específico */
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    height: 100%;
+}
+
+/* Overlay opcional para mejorar legibilidad del texto */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.451); /* Overlay semi-transparente */
+    z-index: 0;
+}
+
+/* Asegurar que el contenido esté por encima del overlay */
+.sidebar > * {
+    position: relative;
+    z-index: 1;
+}
+
 .menu-item.active::before {
     content: '';
     position: absolute;
@@ -7,7 +36,7 @@
     right: -56px;
     background: var(--dashboard-bg);
     border-radius: 10px;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 10px 22px #b3945b4e;
     z-index: 0;
 }
 
