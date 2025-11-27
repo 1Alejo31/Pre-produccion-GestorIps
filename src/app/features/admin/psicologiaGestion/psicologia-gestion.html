@@ -1,0 +1,654 @@
+<div class="container py-3">
+    <!-- Pestañas -->
+    <!-- Navegación de pestañas -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')"
+                type="button" [disabled]="!isSupervisorPsico">
+                <i class="fas fa-search"></i> Consultar Hojas de Vida
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'casos'" (click)="setActiveTab('casos')"
+                type="button">
+                <i class="fas fa-briefcase-medical"></i> Mis Casos Tomados
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'formulario'" (click)="setActiveTab('formulario')"
+                type="button">
+                <i class="fas fa-clipboard-list"></i> Formulario
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'notificacion'"
+                (click)="setActiveTab('notificacion')" type="button">
+                <i class="fas fa-envelope-open-text"></i> Formulario Notificación
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'preguntas'"
+                (click)="setActiveTab('preguntas')" type="button">
+                <i class="fas fa-question-circle"></i> Creación Preguntas
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- ============ TAB 1: CONSULTAR HOJAS DE VIDA ============ -->
+        @if (activeTab === 'consulta') {
+        @if (isSupervisorPsico) {
+        <div class="tab-pane fade show active" [class.show]="activeTab === 'consulta'">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-database me-2"></i>
+                            <h5 class="mb-0">Consulta de Hojas de Vida</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if (isLoadingConsulta) {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <h5 class="text-muted">Consultando hojas de vida...</h5>
+                        <p class="text-muted">Por favor espere un momento</p>
+                    </div>
+                    } @else {
+                    <!-- Contenido de consulta -->
+                    <div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="info-section">
+                                    <h6 class="mb-1" style="color: #b3945b">
+                                        <i class="fas fa-chart-bar me-2"></i>Registros
+                                        Encontrados
+                                    </h6>
+                                    <br />
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge fs-6 me-2" style="background-color: #b3945b">{{
+                                            hojasVidaFiltradas.length }}</span>
+                                        <span class="text-muted">hojas de vida</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted mb-2">
+                                    <i class="fas fa-search me-1"></i>Buscar registros
+                                </label>
+                                <div class="search-container">
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-search text-primary"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0"
+                                            placeholder="Documento, nombre, apellido, correo o ciudad..."
+                                            [(ngModel)]="searchTerm" (input)="filtrarHojasVida()" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla -->
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-sm">
+                                    <!-- Dentro del TAB 1: Consulta de Hojas de Vida -->
+                                    <!-- Tabla de Consulta de Hojas de Vida -->
+                                    <thead class="table-dark sticky-top">
+                                        <tr>
+                                            <th>Documento</th>
+                                            <th>Nombre</th>
+                                            <th>Teléfono</th>
+                                            <th>Ciudad</th>
+                                            <th>Estado</th>
+                                            <th class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (hoja of hojasVidaPaginadas; track hoja.DOCUMENTO) {
+                                        <tr>
+                                            <td>{{ hoja.DOCUMENTO }}</td>
+                                            <td>{{ hoja.NOMBRE }} {{ hoja.PRIMER_APELLIDO }}{{ hoja.SEGUNDO_APELLIDO ? '
+                                                ' + hoja.SEGUNDO_APELLIDO : '' }}</td>
+                                            <td>{{ hoja.TELEFONO }}</td>
+                                            <td>{{ hoja.CIUDAD }}</td>
+                                            <td>
+                                                @if (hoja.ESTADO_NOTIFICACION && hoja.ESTADO_NOTIFICACION !== 'TOMADO POR PSICOLOGIA') {
+                                                <span class="badge estado-badge" [ngClass]="getNotificacionBadgeClass(hoja.ESTADO_NOTIFICACION)" [attr.data-debug]="'ESTADO_NOTIFICACION: ' + hoja.ESTADO_NOTIFICACION">
+                                                    {{ hoja.ESTADO_NOTIFICACION }}
+                                                </span>
+                                                } @else {
+                                                <span class="badge estado-badge" [ngClass]="getBadgeClass(hoja.ESTADO)" [attr.data-debug]="'ESTADO: ' + hoja.ESTADO">
+                                                    {{ hoja.ESTADO }}
+                                                </span>
+                                                }
+                                            </td>
+                                            <!-- Consulta de Hojas de Vida – columna Acciones -->
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <!-- Ver -->
+                                                    <button type="button" class="btn btn-sm btn-action btn-ver-detalle"
+                                                        (click)="verDetalleHoja(hoja)">
+                                                        <span class="me-1">👁️</span>
+                                                        <span class="d-none d-sm-inline">Ver</span>
+                                                    </button>
+                                                    <!-- Consentimiento/Enviar (mantiene estilo de 'ver' salvo que tengas otro método) -->
+                                                    <button type="button" class="btn btn-action btn-consentimiento" title="Enviar notificacion"
+                                                        (click)="enviarEstadoNotificacion(hoja)">
+                                                        <span class="me-1">📄</span>
+                                                        <span class="d-none d-sm-inline">Enviar</span>
+                                                    </button>
+                                                    <!-- Tomar Caso -->
+                                                    <button type="button" class="btn btn-sm btn-action btn-agendar"
+                                                        (click)="tomarCaso(hoja)">
+                                                        <span class="d-none d-sm-inline">Tomar Caso</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Sin resultados -->
+                            @if (hojasVidaPaginadas.length === 0) {
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted mb-2">
+                                    No se encontraron resultados
+                                </h5>
+                                @if (searchTerm) {
+                                <p class="text-muted">
+                                    No hay hojas de vida que coincidan con:
+                                    <strong>"{{ searchTerm }}"</strong>
+                                </p>
+                                } @else {
+                                <p class="text-muted">
+                                    No hay hojas de vida registradas en el sistema
+                                </p>
+                                }
+                            </div>
+                            }
+
+                            <!-- Paginación -->
+                            @if (totalPages > 1) {
+                            <nav aria-label="Paginación de hojas de vida">
+                                <ul class="pagination pagination-custom mb-0">
+                                    <li class="page-item" [class.disabled]="currentPage === 1">
+                                        <button class="page-link" (click)="cambiarPagina(currentPage - 1)">
+                                            Anterior
+                                        </button>
+                                    </li>
+                                    @for (page of paginasArray; track page) {
+                                    <li class="page-item" [class.active]="currentPage === page">
+                                        <button class="page-link" (click)="cambiarPagina(page)">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    }
+                                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                                        <button class="page-link" (click)="cambiarPagina(currentPage + 1)">
+                                            Siguiente
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        } @else {
+        <div class="alert alert-warning">
+            No tienes permisos para consultar hojas de vida.
+        </div>
+        }
+        }
+
+        <!-- ============ TAB 2: MIS CASOS TOMADOS ============ -->
+        @if (activeTab === 'casos') {
+        <div class="tab-pane fade show active" [class.show]="activeTab === 'casos'"
+            [class.active]="activeTab === 'casos'">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-briefcase-medical me-2"></i>
+                            <h5 class="mb-0">Mis Casos Tomados</h5>
+                        </div>
+                        <!-- Buscador removido del header para igualar a 'Consulta' -->
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if (isLoadingCasos) {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <h5 class="text-muted">Consultando tus casos...</h5>
+                        <p class="text-muted">Por favor espere un momento</p>
+                    </div>
+                    } @else {
+                    <div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="info-section">
+                                    <h6 class="mb-1" style="color: #b3945b">
+                                        <i class="fas fa-chart-bar me-2"></i>Registros Encontrados
+                                    </h6>
+                                    <br />
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge fs-6 me-2" style="background-color: #b3945b">{{
+                                            casosTomadosFiltrados.length }}</span>
+                                        <span class="text-muted">casos tomados</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted mb-2">
+                                    <i class="fas fa-search me-1"></i>Buscar registros
+                                </label>
+                                <div class="search-container">
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-search text-primary"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0"
+                                            placeholder="Documento, nombre, apellido, correo o ciudad..."
+                                            [(ngModel)]="searchTermCasos" (input)="filtrarCasosTomados()" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla -->
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-sm">
+                                    <thead class="table-dark sticky-top">
+                                        <tr>
+                                            <th>Documento</th>
+                                            <th>Nombre Completo</th>
+                                            <th>Correo</th>
+                                            <th>Ciudad</th>
+                                            <th>Estado</th>
+                                            <th class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (hoja of casosTomadosPaginados; track hoja.DOCUMENTO) {
+                                        <tr>
+                                            <td>{{ hoja.DOCUMENTO }}</td>
+                                            <td>{{ hoja.NOMBRE }} {{ hoja.PRIMER_APELLIDO }}{{ hoja.SEGUNDO_APELLIDO ? '
+                                                ' + hoja.SEGUNDO_APELLIDO : '' }}</td>
+                                            <td>{{ hoja.CORREO }}</td>
+                                            <td>{{ hoja.CIUDAD }}</td>
+                                            <td>
+                                                @if (hoja.ESTADO_NOTIFICACION) {
+                                                <span class="badge estado-badge" [ngClass]="getNotificacionBadgeClass(hoja.ESTADO_NOTIFICACION)" [attr.data-debug]="'ESTADO_NOTIFICACION: ' + hoja.ESTADO_NOTIFICACION">
+                                                    {{ hoja.ESTADO_NOTIFICACION }}
+                                                </span>
+                                                } @else {
+                                                <span class="badge estado-badge" [ngClass]="getBadgeClass(hoja.ESTADO)" [attr.data-debug]="'ESTADO: ' + hoja.ESTADO">
+                                                    {{ hoja.ESTADO || 'N/A' }}
+                                                </span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group btn-group-sm acciones" role="group"
+                                                    aria-label="Acciones caso">
+                                                    <button type="button" class="btn btn-sm btn-action btn-ver-detalle"
+                                                        (click)="verDetalleHoja(hoja)">
+                                                        <span class="me-1">👁️</span>
+                                                        <span class="d-none d-sm-inline">Ver</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-action btn-consentimiento"
+                                                        title="Enviar notificacion" (click)="enviarEstadoNotificacion(hoja)">
+                                                        <span class="me-1">📄</span>
+                                                        <span class="d-none d-sm-inline">Enviar</span>
+                                                    </button>
+                                                    @if (hoja.TIPO_REUNION) {
+                                                    <button type="button" class="btn btn-sm btn-action btn-outline-danger"
+                                                        (click)="agendarCita(hoja)" title="Reagendar cita">
+                                                        <span class="d-none d-sm-inline">Reagendar</span>
+                                                    </button>
+                                                    } @else {
+                                                    <button type="button" class="btn btn-sm btn-action btn-outline-primary"
+                                                        (click)="agendarCita(hoja)" title="Agendar cita">
+                                                        <span class="d-none d-sm-inline">Agendar</span>
+                                                    </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Sin resultados -->
+                            @if (casosTomadosPaginados.length === 0) {
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted mb-2">No se encontraron resultados</h5>
+                                @if (searchTermCasos) {
+                                <p class="text-muted">
+                                    No hay casos que coincidan con:
+                                    <strong>"{{ searchTermCasos }}"</strong>
+                                </p>
+                                } @else {
+                                <p class="text-muted">No tienes casos tomados</p>
+                                }
+                            </div>
+                            }
+
+                            <!-- Paginación -->
+                            @if (totalPagesCasos > 1) {
+                            <nav aria-label="Paginación de casos tomados">
+                                <ul class="pagination pagination-custom mb-0">
+                                    <li class="page-item" [class.disabled]="currentPageCasos === 1">
+                                        <button class="page-link" (click)="cambiarPaginaCasos(currentPageCasos - 1)">
+                                            Anterior
+                                        </button>
+                                    </li>
+                                    @for (page of paginasArrayCasos; track page) {
+                                    <li class="page-item" [class.active]="currentPageCasos === page">
+                                        <button class="page-link" (click)="cambiarPaginaCasos(page)">
+                                            {{ page }}
+                                        </button>
+                                    </li>
+                                    }
+                                    <li class="page-item" [class.disabled]="currentPageCasos === totalPagesCasos">
+                                        <button class="page-link" (click)="cambiarPaginaCasos(currentPageCasos + 1)">
+                                            Siguiente
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- ============ TAB 3: FORMULARIO ============ -->
+        @if (activeTab === 'formulario') {
+        <div class="tab-pane fade" [class.show]="activeTab === 'formulario'"
+            [class.active]="activeTab === 'formulario'">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i> Formulario de Psicología
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Encabezado -->
+                    <div class="row mb-12">
+                        <div class="col-md-12">
+                            <label class="form-label">Aspirantes</label>
+                            <div class="input-group">
+                                <input class="form-control" [(ngModel)]="aspiranteSearchTerm" name="aspirante"
+                                    placeholder="Documento Identidad" (input)="searchAspirante()" />
+                                <button class="btn btn-outline-secondary" type="button"
+                                    (click)="aspiranteSearchTerm = ''; aspiranteEncontrado = null">
+                                    ×
+                                </button>
+                            </div>
+                            @if (aspiranteEncontrado) {
+                            <div class="mt-3">
+                                <div class="card">
+                                    <div class="card-body p-2">
+                                        <div class="row g-2">
+                                            <div class="col-6"><small class="text-muted">Nombre</small><br><span class="text-dark">{{ aspiranteEncontrado.NOMBRE }} {{ aspiranteEncontrado.PRIMER_APELLIDO }} {{ aspiranteEncontrado.SEGUNDO_APELLIDO }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Documento</small><br><span class="text-dark">{{ aspiranteEncontrado.DOCUMENTO }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Ciudad</small><br><span class="text-dark">{{ aspiranteEncontrado.CIUDAD }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Edad</small><br><span class="text-dark">{{ aspiranteEncontrado.EDAD }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Género</small><br><span class="text-dark">{{ aspiranteEncontrado.GENERO }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Correo</small><br><span class="text-dark">{{ aspiranteEncontrado.CORREO }}</span></div>
+                                            <div class="col-6"><small class="text-muted">Teléfono</small><br><span class="text-dark">{{ aspiranteEncontrado.TELEFONO }}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            <br>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Tabla General -->
+                    @for (sec of formSecciones; track sec.tipo) {
+                    <div class="mb-3">
+                        <h6 class="mb-2">{{ sec.tipo }}</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Pregunta</th>
+                                        <th>Respuesta</th>
+                                        <th>Ampliación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (p of sec.preguntas; let pi = $index; track pi) {
+                                    <tr>
+                                        <td>{{ p.pregunta }}</td>
+                                        <td>
+                                            <select class="form-select" [(ngModel)]="p.respuesta" name="resp_{{ sec.tipo }}_{{ pi }}">
+                                                <option value="SI">SI</option>
+                                                <option value="NO">NO</option>
+                                                <option value="NO APLICA">NO APLICA</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea class="form-control" rows="2" [(ngModel)]="p.ampliacion" name="amp_{{ sec.tipo }}_{{ pi }}"></textarea>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Botón Guardar -->
+                    <div class="text-end mt-4">
+                        <button class="btn btn-info text-white" type="button" (click)="guardarFormulario()"
+                            [disabled]="isSaving">
+                            <i class="fas fa-save me-1"></i>
+                            {{ isSaving ? 'Guardando...' : 'Guardar' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<!-- ============ TAB: FORMULARIO NOTIFICACIÓN ============ -->
+@if (activeTab === 'notificacion') {
+<div class="tab-pane fade show active" [class.show]="activeTab === 'notificacion'">
+    <div class="card notificacion-card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-database me-2"></i>
+                    <h5 class="mb-0">Formulario Notificación</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Asunto -->
+                <div class="col-12">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-heading me-1 text-warning"></i> Asunto <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control form-control-lg"
+                        placeholder="Escribe un asunto claro y conciso" required [(ngModel)]="notificacion.asunto" />
+                </div>
+
+                <!-- Mensaje -->
+                <div class="col-12">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-comment-dots me-1 text-primary"></i> Mensaje <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control form-control-lg" rows="6"
+                        placeholder="Redacta el mensaje de la notificación" required
+                        [(ngModel)]="notificacion.mensaje"></textarea>
+                </div>
+
+                <!-- Adjunto -->
+                <div class="col-12">
+                    <label class="form-label fw-bold">
+                        <i class="fas fa-file-pdf me-1 text-danger"></i> Adjunto (PDF) <span
+                            class="text-danger">*</span>
+                    </label>
+                    
+                    <div class="upload-dropzone" (click)="fileInput.click()">
+                        <div class="text-center">
+                            <i class="fas fa-cloud-upload-alt fa-2x text-muted"></i>
+                            <p class="mt-2 mb-0 text-muted">
+                                @if (notificacionAdjuntoUrl && !adjuntoPdf) {
+                                    Haz clic para reemplazar el PDF existente
+                                } @else {
+                                    Haz clic o arrastra un archivo PDF aquí
+                                }
+                            </p>
+                            @if (adjuntoPdf) {
+                            <div class="mt-3">
+                                <span class="badge bg-secondary">
+                                    {{ adjuntoPdf.name }}
+                                </span>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2"
+                                    (click)="removerAdjunto()">
+                                    <i class="fas fa-times me-1"></i>Quitar
+                                </button>
+                            </div>
+                            }
+                        </div>
+                        <input #fileInput type="file" class="d-none" accept="application/pdf"
+                            (change)="onNotificacionAdjuntoSelected($event)" />
+                    </div>
+
+                    <!-- Vista previa PDF de nuevo archivo -->
+                    @if (adjuntoPdfSafeUrl) {
+                        <div class="pdf-preview mt-3">
+                            <div class="pdf-preview-header">
+                            <i class="fas fa-eye me-1"></i> Vista previa del PDF seleccionado
+                            <button type="button" class="btn btn-outline-primary btn-sm ms-2" (click)="verNotificacionPDF()">
+                                Ver PDF
+                            </button>
+                            </div>
+                            <div class="pdf-preview-body">
+                                <iframe [src]="adjuntoPdfSafeUrl" type="application/pdf" title="Vista previa PDF"></iframe>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Acciones -->
+                <div class="col-12 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light btn-lg" (click)="limpiarNotificacion()">
+                        <i class="fas fa-eraser me-1"></i> Limpiar
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg"
+                        [disabled]="!notificacion.asunto || !notificacion.mensaje || !adjuntoPdf || enviandoNotificacion"
+                        (click)="enviarNotificacion()">
+                        <i class="fas fa-paper-plane me-1"></i>
+                        {{ enviandoNotificacion ? 'Enviando...' : 'Enviar Notificación' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<!-- ============ TAB: CREACIÓN PREGUNTAS ============ -->
+@if (activeTab === 'preguntas') {
+<div class="tab-pane fade show active" [class.show]="activeTab === 'preguntas'">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-list me-2"></i>
+                    <h5 class="mb-0">Creación de Secciones y Preguntas</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button type="button" class="btn btn-action btn-outline-success" (click)="addSeccion()">
+                    <i class="fas fa-plus me-1"></i> Agregar Sección
+                </button>
+                <button type="button" class="btn btn-action btn-outline-primary" (click)="guardarPreguntas()" [disabled]="guardandoPreguntas">
+                    <i class="fas fa-save me-1"></i> {{ guardandoPreguntas ? 'Guardando...' : 'Guardar' }}
+                </button>
+                <button type="button" class="btn btn-action btn-outline-primary" (click)="verPreguntasActivasModal()">
+                    <i class="fas fa-list me-1"></i> Ver Preguntas Activas
+                </button>
+            </div>
+
+            @for (sec of preguntasSecciones; let si = $index; track si) {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-layer-group text-primary"></i>
+                        <input class="form-control form-control-sm" [(ngModel)]="sec.nombre" name="sec_nombre_{{ si }}" placeholder="Nombre de la sección" />
+                    </div>
+                    <button type="button" class="btn btn-action btn-outline-danger btn-sm" (click)="removeSeccion(si)">
+                        <i class="fas fa-trash me-1"></i> Eliminar Sección
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Pregunta</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (p of sec.preguntas; let pi = $index; track pi) {
+                                <tr>
+                                    <td>
+                                        <input class="form-control" [(ngModel)]="p.texto" name="pregunta_{{ si }}_{{ pi }}" placeholder="Texto de la pregunta" />
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-action btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center" (click)="removePregunta(si, pi)" aria-label="Eliminar pregunta">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-action btn-outline-success btn-sm" (click)="addPregunta(si)">
+                        <i class="fas fa-plus me-1"></i> Agregar pregunta
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+}

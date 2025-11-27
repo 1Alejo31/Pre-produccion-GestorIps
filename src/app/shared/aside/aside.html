@@ -1,9 +1,9 @@
 <aside class="sidebar d-flex flex-column">
     <div class="brand d-flex align-items-center gap-2 fw-bold">
-        <span class="d-inline-grid place-items-center">
+        <span class="brand-logo d-inline-grid place-items-center">
             <img src="../../../assets/images/man.png" alt="" class="logo" width="100%" style="height: 40px;">
         </span>
-        {{ userName }}
+        <span class="brand-text">{{ userName }}</span>
     </div>
 
     <nav class="menu">
@@ -27,6 +27,13 @@
             (click)="openIpsGestion()">
             <span class="icon">📅</span>
             <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">IPS Gestión</span>
+        </a>
+
+        <!-- Psicología Gestión - Admin, Supervisor Psicología y Psicólogo -->
+        <a *ngIf="canViewPsicologiaGestion" class="menu-item d-grid" [class.active]="activePanel === 'psicologiaGestion'"
+           (click)="openPsicologiaGestion()">
+            <span class="icon">🧠</span>
+            <span class="text" style="font-size: 1.0rem; text-transform: uppercase;">Psicología Gestión</span>
         </a>
 
         <!-- Gestor Hoja de Vida - Administrador, Supervisor y Cliente -->

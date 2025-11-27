@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
     selector: 'app-aside',
     standalone: true,
-    imports: [CommonModule, RouterLink, RouterLinkActive],
+    imports: [CommonModule],
     templateUrl: './aside.html',
     styleUrls: ['./aside.css']
 })
@@ -20,6 +20,8 @@ export class Aside implements OnInit {
     canViewAdminIps: boolean = false;
     canViewIpsGestion: boolean = false;
     canViewGestorHojaVida: boolean = false;
+    // Nueva bandera de visibilidad para el menú de Psicología
+    canViewPsicologiaGestion: boolean = false;
 
     // Nombre del usuario
     userName: string = '';
@@ -57,12 +59,12 @@ export class Aside implements OnInit {
 
         switch (perfil) {
             case 'administrador':
-                // Administrador con Lectura y Escritura puede ver todo
                 if (permiso.includes('lectura') && permiso.includes('escritura')) {
                     this.canViewGestorUsuarios = true;
                     this.canViewAdminIps = true;
                     this.canViewIpsGestion = true;
                     this.canViewGestorHojaVida = true;
+                    this.canViewPsicologiaGestion = true;
                 }
                 break;
 
@@ -71,6 +73,16 @@ export class Aside implements OnInit {
                 this.canViewAdminIps = true;
                 this.canViewIpsGestion = true;
                 this.canViewGestorHojaVida = true;
+                break;
+
+            case 'supervisor_psicologia':
+                // Supervisor de psicología
+                this.canViewPsicologiaGestion = true;
+                break;
+
+            case 'psicologo':
+                // Psicólogo
+                this.canViewPsicologiaGestion = true;
                 break;
 
             case 'usuario':
@@ -98,6 +110,7 @@ export class Aside implements OnInit {
         this.canViewAdminIps = false;
         this.canViewIpsGestion = false;
         this.canViewGestorHojaVida = false;
+        this.canViewPsicologiaGestion = false;
     }
 
     openRegistroUsuarios() {
@@ -115,6 +128,12 @@ export class Aside implements OnInit {
     openIpsGestion() {
         if (this.canViewIpsGestion) {
             this.selectPanel.emit('ipsGestion');
+        }
+    }
+
+    openPsicologiaGestion() {
+        if (this.canViewPsicologiaGestion) {
+            this.selectPanel.emit('psicologiaGestion');
         }
     }
 

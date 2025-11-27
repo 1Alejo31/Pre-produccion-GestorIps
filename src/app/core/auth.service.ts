@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { LoginService } from '../features/login/login.service';
 
 @Injectable({
     providedIn: 'root'
@@ -9,10 +10,15 @@ import Swal from 'sweetalert2';
 export class AuthService {
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+    private refreshInterval: any;
+    private readonly REFRESH_THRESHOLD_MINUTES = 30; // Renovar cuando queden 30 minutos
+    private readonly SESSION_DURATION_HOURS = 3; // Duración objetivo de 3 horas
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private loginService: LoginService) {
         // Verificar autenticación al inicializar el servicio
         this.checkAuthStatus();
+        // Iniciar verificación periódica de renovación
+        this.startAutoRefresh();
     }
 
     /**
@@ -180,6 +186,84 @@ export class AuthService {
             return Math.max(0, Math.floor(timeRemaining / 60)); // Convertir a minutos
         } catch (error) {
             return 0;
+        }
+    }
+
+    /**
+     * Inicia la renovación automática del token
+     */
+    private startAutoRefresh(): void {
+        // Verificar cada 5 minutos si necesitamos renovar el token
+        this.refreshInterval = setInterval(() => {
+            this.checkAndRefreshToken();
+        }, 5 * 60 * 1000); // 5 minutos
+    }
+
+    /**
+     * Verifica y renueva el token si está próximo a expirar
+     */
+    private checkAndRefreshToken(): void {
+        if (!this.isAuthenticated()) {
+            return;
+        }
+
+        const timeRemaining = this.getTokenTimeRemaining();
+        
+        // Si quedan menos de 30 minutos para expirar, renovar el token
+        if (timeRemaining <= this.REFRESH_THRESHOLD_MINUTES && timeRemaining > 0) {
+            this.refreshToken();
+        }
+    }
+
+    /**
+     * Renueva el token automáticamente
+     */
+    private refreshToken(): void {
+        this.loginService.refreshToken().subscribe({
+            next: (response) => {
+                if (response && response.token) {
+                    // Actualizar el token en localStorage
+                    localStorage.setItem('token', response.token);
+                    
+                    // Actualizar el estado de autenticación
+                    this.checkAuthStatus();
+                    
+                    console.log('Token renovado exitosamente. Nueva duración: 3 horas');
+                }
+            },
+            error: (error) => {
+                console.error('Error al renovar token:', error);
+                // Si falla la renovación, cerrar sesión
+                this.logout();
+            }
+        });
+    }
+
+    /**
+     * Obtiene el tiempo de expiración del token en minutos
+     */
+    getTokenExpirationTime(): number {
+        const token = localStorage.getItem('token');
+        
+        if (!token) return 0;
+        
+        try {
+            const payload = this.decodeToken(token);
+            if (!payload || !payload.exp || !payload.iat) return 0;
+            
+            const totalDuration = payload.exp - payload.iat;
+            return Math.floor(totalDuration / 60); // Convertir a minutos
+        } catch (error) {
+            return 0;
+        }
+    }
+
+    /**
+     * Limpia los intervalos cuando se destruye el servicio
+     */
+    ngOnDestroy(): void {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
         }
     }
 }

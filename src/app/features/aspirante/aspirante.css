@@ -1,0 +1,547 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    width: 100%;
+    
+    /* Solo el fondo original */
+    background-image: url('/assets/images/fondoWar2.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Imagen flotante que sigue el mouse */
+.floating-image {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    pointer-events: none; /* No interfiere con otros elementos */
+    z-index: 1;
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+}
+
+.floating-image img {
+    width: 100%;
+    height: 120%;
+    object-fit: cover;
+    object-position: center;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Ocultar imagen flotante en dispositivos móviles */
+@media (max-width: 768px) {
+    .floating-image {
+        display: none;
+    }
+}
+
+.aspirante-container {
+    min-height: 25vh;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.aspirante-form {
+    margin-top: 15% !important;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.7rem;
+    box-shadow: 0 10px 30px #b3945b48;
+}
+
+.logo {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* Estilos adicionales para el formulario de aspirante */
+.form-group label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #B3945B;
+    box-shadow: 0 0 0 0.2rem rgba(179, 148, 91, 0.25);
+    outline: 0;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.alert {
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Estilos para la sección de consentimiento */
+.consentimiento-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px dashed #B3945B;
+}
+
+.consentimiento-title {
+    color: #B3945B;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+.consentimiento-content {
+    margin-bottom: 0;
+}
+
+.consentimiento-divider {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    margin: 1.5rem 0;
+}
+
+/* Estilos para carga de archivos */
+.file-upload-area {
+    position: relative;
+    text-align: center;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    border: 2px dashed #B3945B;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background: #f8f9fa;
+    border-color: #9a7d4a;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.file-upload-label span {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.file-types {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.file-selected {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #495057;
+    word-break: break-word;
+}
+
+.file-size {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Estilos para la previsualización del archivo */
+.file-preview {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.preview-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.preview-header h6 {
+    margin: 0;
+    color: #495057;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.preview-content {
+    padding: 1rem;
+    background: #ffffff;
+}
+
+.pdf-preview {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+}
+
+.btn-outline-primary {
+    color: #007bff;
+    border: 1px solid #007bff;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #007bff;
+    color: white;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-outline-danger {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* Estilos para el visualizador de PDF */
+.pdf-viewer-modal {
+    width: 100%;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pdf-embed {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos personalizados para el modal de SweetAlert2 */
+:host ::ng-deep .pdf-viewer-container {
+    z-index: 10000 !important;
+}
+
+:host ::ng-deep .pdf-viewer-html-container {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+:host ::ng-deep .swal2-popup {
+    padding: 0;
+    width: 80% !important;
+    max-width: 900px !important;
+}
+
+:host ::ng-deep .swal2-header {
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 0;
+}
+
+:host ::ng-deep .swal2-title {
+    margin: 0;
+    color: #495057;
+    font-size: 1.25rem;
+}
+
+:host ::ng-deep .swal2-close {
+    color: #6c757d;
+    font-size: 1.5rem;
+}
+
+:host ::ng-deep .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Botón de visualizar PDF existente */
+.btn-view-pdf {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-view-pdf:hover {
+    background: #138496;
+}
+
+.btn-view-pdf:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Estilos del Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-title {
+    margin: 0;
+    color: #333;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+.btn-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Estilos de la Línea de Tiempo */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.timeline-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border-left: 4px solid #B3945B;
+}
+
+.timeline-title {
+    color: #B3945B;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+.timeline-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.timeline-label {
+    font-weight: 500;
+    color: #495057;
+    flex: 0 0 40%;
+    max-width: 40%;
+}
+
+.timeline-value {
+    color: #212529;
+    flex: 0 0 55%;
+    max-width: 55%;
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .aspirante-form {
+        margin-top: 10% !important;
+        padding: 1.5rem;
+    }
+    
+    .col-md-4.offset-md-9 {
+        margin-left: 0;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .timeline-item {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .timeline-label,
+    .timeline-value {
+        flex: 1;
+        max-width: 100%;
+        text-align: left;
+    }
+    
+    .timeline-value {
+        font-weight: 400;
+        color: #6c757d;
+    }
+    
+    .file-actions {
+        justify-content: center;
+    }
+    
+    .file-info {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .pdf-preview {
+        height: 300px;
+    }
+}

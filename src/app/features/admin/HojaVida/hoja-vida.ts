@@ -55,9 +55,9 @@ export class HojaVida implements AfterViewInit, OnDestroy {
     @ViewChild('barChart', { static: false }) barChartRef!: ElementRef<HTMLCanvasElement>;
     @ViewChild('cityChart', { static: false }) cityChartRef!: ElementRef<HTMLCanvasElement>;
 
-    pieChart: Chart | null = null;
-    barChart: Chart | null = null;
-    cityChart: Chart | null = null;
+    pieChart: Chart<'pie'> | null = null;
+    barChart: Chart<'bar'> | null = null;
+    cityChart: Chart<'bar'> | null = null;
 
     estadisticasEstado: any = {};
     estadisticasCiudad: any = {};
@@ -1323,8 +1323,8 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         const data = Object.values(this.estadisticasEstado);
         const colors = this.generarColores(labels.length);
 
-        const config: ChartConfiguration = {
-            type: 'pie' as ChartType,
+        const config: ChartConfiguration<'pie'> = {
+            type: 'pie',
             data: {
                 labels: labels,
                 datasets: [{
@@ -1367,8 +1367,8 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         const data = Object.values(this.estadisticasEstado);
         const colors = this.generarColores(labels.length);
 
-        const config: ChartConfiguration = {
-            type: 'bar' as ChartType,
+        const config: ChartConfiguration<'bar'> = {
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
@@ -1411,8 +1411,8 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         const data = Object.values(this.estadisticasCiudad);
         const colors = this.generarColores(labels.length);
 
-        const config: ChartConfiguration = {
-            type: 'bar' as ChartType,
+        const config: ChartConfiguration<'bar'> = {
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{

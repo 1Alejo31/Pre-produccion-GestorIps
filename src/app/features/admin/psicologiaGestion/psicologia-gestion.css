@@ -1,0 +1,459 @@
+/* Estilos alineados con IPS Gestión */
+.card {
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg,
+        #B3945B 0%,
+        #B3945B 100%);
+}
+
+.card-header.bg-success {
+    background-color: #198754 !important;
+}
+
+.card-header.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #fff;
+}
+
+
+.btn-ver-detalle {
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+.btn-ver-detalle:hover {
+    background-color: #17a2b8;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+}
+
+
+.table thead.table-dark {
+    background: linear-gradient(135deg, #212529 0%, #212529 100%) !important;
+    color: #fff !important;
+}
+.table.table thead.table-dark th {
+    background: linear-gradient(135deg, #212529 0%, #212529 100%) !important;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+    border: none !important;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Contenedor de tabla igual a Hoja de Vida */
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+}
+
+/* Tabs idénticos a IPS Gestión */
+.nav-tabs {
+    border-bottom: 2px solid #B3945B;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #B3945B;
+    font-weight: 500;
+    padding: 12px 20px;
+    margin-right: 5px;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgba(105, 181, 212, 0.1);
+    color: #5a9fd4;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #B3945B;
+    color: white;
+    border-bottom: 2px solid #B3945B;
+}
+
+/* Estilos de consulta reutilizados del módulo Hoja de Vida */
+/* Header similar al de Hoja de Vida */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #B3945B 0%, #b3945b67 100%);
+    border: none;
+}
+
+/* Tabla responsive y estilos */
+.table-responsive {
+    max-height: 60vh;
+}
+table.table {
+    margin-bottom: 0;
+}
+table.table thead.table-dark th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Filas y hover de tabla */
+.table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border: none;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(105, 181, 212, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges con gradientes (mismos de Hoja de Vida) */
+.badge.rounded-pill {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.badge.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+.badge.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+    color: #212529 !important;
+}
+.badge.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%) !important;
+}
+.badge.bg-info {
+    background: linear-gradient(135deg, #B3945B 0%, #6f42c1 100%) !important;
+}
+
+/* Botones iguales a Hoja de Vida */
+.btn-primary {
+    background-color: #B3945B;
+    border-color: #B3945B;
+}
+
+/* Botón de acción y estilo outline-info como Hoja de Vida */
+.btn-action {
+    font-size: 0.78rem;
+    padding: 3px 10px;
+    margin: 0;
+    border-radius: 6px;       /* valor base; se controla en el grupo */
+    transition: all 0.2s ease-in-out;
+}
+.btn-action.btn-sm {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+}
+.btn-action.btn-xs {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+}
+.btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Variantes outline para uso general en la sección de creación */
+.btn-action.btn-outline-primary {
+    background-color: #fff;
+    border: 1px solid #0d6efd;
+    color: #0d6efd;
+}
+.btn-action.btn-outline-primary:hover,
+.btn-action.btn-outline-primary:focus {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+.btn-action.btn-outline-success {
+    background-color: #fff;
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+.btn-action.btn-outline-success:hover,
+.btn-action.btn-outline-success:focus {
+    background-color: #28a745;
+    color: #fff;
+    border-color: #28a745;
+}
+
+.btn-action.btn-outline-danger {
+    background-color: #fff;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+.btn-action.btn-outline-danger:hover,
+.btn-action.btn-outline-danger:focus {
+    background-color: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+}
+
+/* Ver (azul) */
+.btn-ver-detalle {
+    border: 1px solid #17a2b8;
+    color: #17a2b8;
+    background-color: #fff;
+}
+.btn-ver-detalle:hover {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+/* Centro: amarillo y sin bordes redondeados */
+.btn-consentimiento {
+    background-color: #fff;       /* fondo blanco por defecto */
+    border: 1px solid #ffc107;    /* borde amarillo */
+    color: #ffc107;               /* texto amarillo */
+    border-radius: 0;             /* sin bordes redondeados en el centro */
+}
+.btn-consentimiento:hover,
+.btn-consentimiento:focus {
+    background-color: #ffc107;    /* fondo amarillo al hover */
+    color: #fff;                  /* texto blanco al hover */
+    border-color: #ffc107;        /* mantiene borde amarillo */
+}
+
+/* Tomar caso (verde) — reforzado para que no se pierda */
+.btn.btn-agendar {
+    border: 1px solid #28a745 !important;
+    color: #28a745 !important;
+    background-color: #fff !important;
+}
+.btn.btn-agendar:hover,
+.btn.btn-agendar:focus {
+    background-color: #28a745 !important;
+    color: #fff !important;
+    border-color: #28a745 !important;
+}
+
+/* Grupo segmentado: radios solo en extremos y sin doble borde */
+.acciones.btn-group .btn {
+    border-radius: 0;
+}
+.acciones.btn-group .btn + .btn {
+    margin-left: -1px;
+}
+.acciones.btn-group .btn:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.acciones.btn-group .btn:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+/* Compacto en móviles */
+@media (max-width: 576px) {
+    .acciones.btn-group {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .acciones.btn-group .btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+}
+/* Forzamos el esquema de colores del botón outline-info al dorado */
+.btn-outline-info.btn-sm {
+    border: 2px solid #B3945B !important;
+    color: #B3945B !important;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+}
+.btn-outline-info.btn-sm:hover {
+    background-color: #B3945B !important;
+    border-color: #B3945B !important;
+    color: white !important;
+}
+
+/* Paginación deshabilitada similar */
+.pagination .page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+    opacity: 0.6;
+}
+
+/* Mejoras de modal para detalle */
+:global(.swal-wide) {
+    width: 1100px !important;
+    max-width: 95vw !important;
+}
+.sticky-top { position: sticky; top: 0; z-index: 10; }
+.search-container { position: relative; }
+.search-container .input-group-text {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-right: none;
+    padding: 0.75rem 1rem;
+}
+.search-container .form-control {
+    border: 2px solid #e9ecef;
+    border-left: none;
+    padding-left: 0.75rem;
+}
+
+/* Paginación con estilos de Hoja de Vida */
+.pagination-custom .page-item .page-link {
+    border: 2px solid #e9ecef;
+    color: #B3945B;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    margin: 0 0.25rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: white;
+}
+.pagination-custom .page-item.active .page-link {
+    background: linear-gradient(135deg, #B3945B 0%, #b3945b67 100%);
+    border-color: #b3945b67;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(105, 181, 212, 0.4);
+}
+.pagination-custom .page-item .page-link:hover:not(.active) {
+    background-color: rgba(105, 181, 212, 0.1);
+    border-color: #B3945B;
+    color: #b3945b67;
+    transform: translateY(-1px);
+}
+.pagination-custom .page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+    opacity: 0.6;
+}
+@media (max-width: 768px) {
+    .pagination-custom {
+        justify-content: center;
+    }
+    .pagination-custom .page-item .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+/* Texto siempre blanco en badges de Estado */
+.estado-badge {
+    color: #fff !important;
+}
+.estado-badge.bg-warning,
+.estado-badge.bg-danger,
+.estado-badge.bg-success,
+.estado-badge.bg-info,
+.estado-badge.bg-secondary {
+    color: #fff !important;
+}
+
+/* Si existen reglas previas como .badge.bg-warning que ponen negro, esto las supera */
+.badge.bg-warning.estado-badge {
+    color: #fff !important;
+}
+/* Si hay íconos dentro del badge, también en blanco */
+.estado-badge i, .estado-badge .fa {
+    color: #fff !important;
+}
+.swal-pdf-viewer { padding: 0; }
+.swal-pdf-container { width: 100%; height: 70vh; padding: 0; }
+.swal-pdf-viewer .swal2-html-container { margin: 0; padding: 0; }
+.swal-pdf-container iframe { width: 100%; height: 100%; border: none; }
+
+/* Estilos del formulario de notificación */
+.notificacion-card {
+    border-radius: 14px;
+    overflow: hidden;
+}
+.gradient-warning {
+    background: linear-gradient(135deg, #f7b733 0%, #fc4a1a 100%);
+}
+.upload-dropzone {
+    border: 2px dashed #ced4da;
+    border-radius: 10px;
+    padding: 24px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+.upload-dropzone:hover {
+    border-color: #6c757d;
+    background: #f5f5f5;
+}
+.upload-dropzone .badge {
+    font-size: 0.9rem;
+}
+
+/* Vista previa PDF */
+.pdf-preview {
+    border: 1px solid #e2e3e5;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+.pdf-preview-header {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 10px 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #e9ecef;
+}
+.pdf-preview-body {
+    width: 100%;
+    height: 60vh;
+}
+.pdf-preview-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+}
+
+/* Vista previa de PDF existente */
+.existing-pdf-preview {
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    background: #f8fff8;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+    overflow: hidden;
+}
+.existing-pdf-preview .pdf-preview-header {
+    background: #28a745;
+    color: #fff;
+    padding: 10px 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #28a745;
+}
+.pdf-preview-info {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Botones grandes, consistentes */
+.btn.btn-lg i {
+    vertical-align: middle;
+    margin-right: 6px;
+}
+/* Asegurar estilo del header dentro de SweetAlert (fuera del árbol del componente) */
+:host ::ng-deep .swal2-popup .card-header.bg-gradient-primary {
+    background: linear-gradient(135deg, #B3945B 0%, #b3945b67 100%) !important;
+    color: #fff !important;
+    border: none !important;
+}

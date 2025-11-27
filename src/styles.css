@@ -163,6 +163,11 @@
     display: none;
 }
 
+/* Centrar logo de la marca cuando está colapsado */
+.layout.collapsed .brand {
+    justify-content: center;
+}
+
 /* Main */
 .main {
     flex: 1;

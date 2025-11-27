@@ -1,0 +1,168 @@
+<div class="aspirante-container" (mousemove)="onMouseMove($event)">
+    <!-- Imagen flotante que sigue el mouse -->
+    <div class="floating-image" [style.transform]="imageTransform">
+        <img src="/assets/images/man.png" alt="Floating Man" />
+    </div>
+    
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            
+            <div class="col-12 col-md-4 offset-md-9">
+                <div class="aspirante-form">
+                    <img src="/assets/images/logow.png" alt="" class="logo">
+                    <form (ngSubmit)="buscarAspirante()" autocomplete="on">
+                        <div class="form-group mt-3">
+                            <label for="numeroDocumento">Número de Documento de Identidad</label>
+                            <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
+                                [(ngModel)]="aspiranteData.numeroDocumento" autocomplete="off" 
+                                placeholder="Ingresar número de documento" required style="margin-top: 5%;">
+                            <small class="form-text text-muted">Ingrese solo números (6-12 dígitos)</small>
+                        </div>
+                        
+                        @if (aspiranteData.errorMessage) {
+                            <div class="alert alert-danger mt-3" role="alert">
+                                {{ aspiranteData.errorMessage }}
+                            </div>
+                        }
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn" [disabled]="loading"
+                                style="background-color: #B3945B; color: white;">
+                                @if (loading) {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    Buscando...
+                                } @else {
+                                    Buscar Aspirante
+                                }
+                            </button>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-2">
+                            <button type="button" class="btn btn-secondary" (click)="limpiarFormulario()">
+                                Limpiar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Modal de información del aspirante -->
+@if (showModal && aspiranteInfo) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h5 class="modal-title">Información del Aspirante</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Sección de carga de consentimiento -->
+                @if (mostrarCampoConsentimiento()) {
+                    <div class="consentimiento-section mb-4">
+                        <h6 class="consentimiento-title">Cargar Consentimiento</h6>
+                        
+                        <!-- Botón para visualizar PDF existente -->
+                        @if (tienePdfExistente()) {
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-view-pdf btn-sm" (click)="visualizarPdfExistente()" [disabled]="loadingPdfExistente">
+                                    @if (loadingPdfExistente) {
+                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                        Cargando PDF...
+                                    } @else {
+                                        📄 Ver PDF Actual
+                                    }
+                                </button>
+                            </div>
+                        }
+                        
+                        <div class="consentimiento-content">
+                            @if (!consentimientoFile) {
+                                <div class="file-upload-area">
+                                    <input type="file" id="consentimientoFile" (change)="onFileSelected($event)" 
+                                           accept=".pdf" class="file-input">
+                                    <label for="consentimientoFile" class="file-upload-label">
+                                        <i class="upload-icon">📁</i>
+                                        <span>Seleccionar archivo de consentimiento</span>
+                                        <small class="file-types">Solo PDF</small>
+                                    </label>
+                                </div>
+                            } @else {
+                                <div class="file-selected">
+                                    <div class="file-info">
+                                        <span class="file-name">{{ consentimientoFile.name }}</span>
+                                        <span class="file-size">({{ (consentimientoFile.size / 1024).toFixed(2) }} KB)</span>
+                                    </div>
+                                    <div class="file-actions">
+                                        @if (consentimientoPreview) {
+                                            <button type="button" class="btn btn-sm btn-outline-primary" (click)="previsualizarArchivo()">
+                                                @if (mostrarPrevisualizacion) {
+                                                    Ocultar Previsualización
+                                                } @else {
+                                                    Previsualizar
+                                                }
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-success" (click)="subirConsentimiento()" [disabled]="uploadingConsentimiento">
+                                            @if (uploadingConsentimiento) {
+                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                                Subiendo...
+                                            } @else {
+                                                Subir Archivo
+                                            }
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="eliminarArchivo()">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Previsualización del archivo -->
+                                    @if (mostrarPrevisualizacion && consentimientoPreview) {
+                                        <div class="file-preview mt-3">
+                                            <div class="preview-header">
+                                                <h6>Vista previa del archivo</h6>
+                                            </div>
+                                            <div class="preview-content">
+                                                @if (consentimientoPreview) {
+                                                    <embed [src]="consentimientoPreview" type="application/pdf" class="pdf-preview">
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <hr class="consentimiento-divider">
+                }
+
+                <div class="timeline">
+                    @for (seccion of getTimelineData(); track seccion.title) {
+                        <div class="timeline-section">
+                            <h6 class="timeline-title">{{ seccion.title }}</h6>
+                            <div class="timeline-items">
+                                @for (item of seccion.items; track item.label) {
+                                    <div class="timeline-item">
+                                        <div class="timeline-label">{{ item.label }}:</div>
+                                        <div class="timeline-value">{{ item.value }}</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+}
+
+<footer class="fixed-bottom">
+    <p class="mb-0 py-2" style="color: #ffffff;">
+        &copy; 2025 Aguisu. Todos los derechos reservados por @Aguisu.com.
+    </p>
+</footer>

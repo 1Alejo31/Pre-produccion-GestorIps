@@ -17,7 +17,7 @@ export class RegistroUsuarios implements OnInit {
     cargandoIps = false;
 
     tiposDocumento = ['CC', 'CE', 'TI', 'PA'];
-    perfiles = ['Administrador', 'Supervisor', 'Usuario', 'Cliente'];
+    perfiles = ['Administrador', 'Supervisor', 'Usuario', 'Cliente', 'Psicólogo-Supervisor', 'Psicólogo'];
     estados = ['Activo', 'Inactivo', 'Suspendido'];
     ips: any[] = [];
 

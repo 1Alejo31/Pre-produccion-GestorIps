@@ -1,7 +1,6 @@
 <div class="layout" [class.collapsed]="isSidebarCollapsed" *ngIf="user as u">
     <!-- Sidebar -->
     <app-aside [activePanel]="activePanel" (selectPanel)="activatePanel($event)"></app-aside>
-
     <!-- Main -->
     <main class="main">
         <app-topbar (menuToggle)="toggleSidebar()" (logoutClick)="logout()"></app-topbar>
@@ -16,12 +15,12 @@
                             <div class="card-body">
                                 <h4 class="card-title text-primary">
                                     <i class="fas fa-home me-2"></i>
-                                    Bienvenido, {{ user?.nombre }} {{ user?.apellido }}
+                                    Bienvenido, {{ u.nombre }} {{ u.apellido }}
                                 </h4>
                                 <p class="card-text text-muted">
-                                    Perfil: <span class="badge bg-primary">{{ user?.perfil }}</span> | 
-                                    Empresa: <span class="badge bg-secondary">{{ user?.empresa }}</span> |
-                                    Permisos: <span class="badge bg-info">{{ user?.permiso }}</span>
+                                    Perfil: <span class="badge bg-primary">{{ u.perfil }}</span> | 
+                                    Empresa: <span class="badge bg-secondary">{{ u.empresa }}</span> |
+                                    Permisos: <span class="badge bg-info">{{ u.permiso }}</span>
                                 </p>
                             </div>
                         </div>
@@ -47,7 +46,7 @@
                                 </p>
                                 <p class="text-muted mb-0">
                                     <i class="fas fa-user me-2"></i>
-                                    Autenticado como: {{ user?.correo }}
+                                    Autenticado como: {{ u.correo }}
                                 </p>
                             </div>
                         </div>
@@ -80,6 +79,11 @@
                                         <i class="fas fa-calendar-alt me-2"></i>
                                         IPS Gestión
                                     </button>
+                                    <!-- Nueva acción rápida -->
+                                    <button *ngIf="canViewPsicologiaGestion" class="btn btn-outline-info btn-sm" (click)="activatePanel('psicologiaGestion')">
+                                        <i class="fas fa-brain me-2"></i>
+                                        Psicología Gestión
+                                    </button>
                                 </div>
                                 
                                 <!-- Mensaje cuando no hay permisos -->
@@ -103,11 +107,11 @@
 
         <!-- Panel IPS Gestion - Administrador, Supervisor y Usuario -->
         <app-ips-gestion *ngIf="activePanel === 'ipsGestion' && canViewIpsGestion"></app-ips-gestion>
-
-        <!-- Panel Formulario de Hoja de Vida - Administrador, Supervisor y Cliente -->
+        <!-- Panel Psicología Gestión - Administrador, Supervisor Psicología y Psicólogo -->
+        <app-psicologia-gestion *ngIf="activePanel === 'psicologiaGestion' && canViewPsicologiaGestion"></app-psicologia-gestion>
+        <!-- Panel Formulario de Hoja de Vida -->
         <app-hoja-vida *ngIf="activePanel === 'hojaVida' && canViewGestorHojaVida"></app-hoja-vida>
-
-        <!-- Panel Aplicaciones - Disponible para todos los usuarios con permisos -->
+        <!-- Panel Aplicaciones -->
         <app-aplicaciones *ngIf="activePanel === 'aplicaciones'"></app-aplicaciones>
     </main>
 </div>

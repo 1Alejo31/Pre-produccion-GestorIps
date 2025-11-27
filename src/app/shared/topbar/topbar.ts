@@ -27,8 +27,10 @@ export class Topbar implements OnInit, OnDestroy {
     displayName = 'Usuario';
     initials = 'U';
     sessionDuration = 0;
+    tokenExpirationTime = 0;
     isAuthenticated = false;
     private sessionCheckInterval: any;
+    private refreshCheckInterval: any;
 
     ngOnInit(): void {
         // Verificar estado inicial
@@ -78,6 +80,7 @@ export class Topbar implements OnInit, OnDestroy {
     private updateSessionStatus(): void {
         this.isAuthenticated = this.authService.isAuthenticated();
         this.sessionDuration = this.authService.getSessionDuration();
+        this.tokenExpirationTime = this.authService.getTokenExpirationTime();
     }
 
     getSessionStatusClass(): string {
@@ -88,6 +91,26 @@ export class Topbar implements OnInit, OnDestroy {
     getSessionStatusText(): string {
         if (!this.isAuthenticated) return 'Desconectado';
         return 'Conectado';
+    }
+
+    getFormattedTokenExpiration(): string {
+        if (!this.isAuthenticated) return '0min';
+        
+        // Si no hay tiempo de expiración, obtenerlo del servicio
+        if (this.tokenExpirationTime <= 0) {
+            this.tokenExpirationTime = this.authService.getTokenExpirationTime();
+        }
+        
+        if (this.tokenExpirationTime <= 0) return '0min';
+        
+        const hours = Math.floor(this.tokenExpirationTime / 60);
+        const minutes = this.tokenExpirationTime % 60;
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}min`;
+        } else {
+            return `${minutes}min`;
+        }
     }
 
     ngOnDestroy(): void {
