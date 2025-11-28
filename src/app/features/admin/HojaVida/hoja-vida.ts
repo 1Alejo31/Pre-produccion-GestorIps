@@ -1130,6 +1130,31 @@ export class HojaVida implements AfterViewInit, OnDestroy {
             html += '</div></div>';
         }
 
+        // Documento de Datos Biométricos
+        if (hoja?.RUTA_BIOMETRIA && hoja?.RUTA_BIOMETRIA?.ruta) {
+            const fechaBio = hoja?.RUTA_BIOMETRIA?.fecha || '';
+            html += '<div class="card mb-3 shadow">';
+            html += '<div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-fingerprint me-2"></i>Datos Biométricos</h6>';
+            html += '</div>';
+            html += '<div class="card-body text-center">';
+            html += '<div class="mb-3">';
+            html += '<i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>';
+            html += `<p class="mt-2 mb-3"><strong>Archivo biométrico disponible</strong></p>`;
+            if (fechaBio) {
+                try {
+                    const f = new Date(fechaBio).toLocaleString('es-CO');
+                    html += `<small class="text-muted">Subido: ${f}</small>`;
+                } catch {}
+            }
+            html += `<div class="mt-2">`;
+            html += `<button type="button" class="btn btn-primary" id="verBiometriaBtn">`;
+            html += `<i class="fas fa-eye me-2"></i>Ver Biometría`;
+            html += `</button>`;
+            html += `</div>`;
+            html += '</div></div>';
+        }
+
         html += '</div>';
 
         Swal.fire({
@@ -1149,6 +1174,11 @@ export class HojaVida implements AfterViewInit, OnDestroy {
                     if (verPdfBtn) {
                         verPdfBtn.onclick = () => this.verPDF(hoja.PDF_URL!);
                     }
+                }
+                const verBioBtn = document.getElementById('verBiometriaBtn') as HTMLButtonElement | null;
+                if (verBioBtn) {
+                    const aspiranteId = hoja?._id || hoja?.PKEYASPIRANT || hoja?.PKEYHOJAVIDA;
+                    verBioBtn.onclick = () => this.verBiometriaPorAspirante(String(aspiranteId || ''));
                 }
             }
         });
@@ -1228,6 +1258,59 @@ export class HojaVida implements AfterViewInit, OnDestroy {
                 Swal.fire({
                     title: 'Error al cargar PDF',
                     text: 'No se pudo cargar el documento PDF. Verifique que el archivo existe.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
+    verBiometriaPorAspirante(aspiranteId: string): void {
+        if (!aspiranteId || String(aspiranteId).trim().length === 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo identificar el aspirante para descargar la biometría',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cargando Biometría...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        this.hojaVidaService.obtenerBiometriaPorAspirante(aspiranteId).subscribe({
+            next: (pdfBlob: Blob) => {
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                Swal.close();
+                const html = `
+                    <div style="width: 100%; height: 80vh;">
+                        <iframe src="${pdfBlobUrl}" style="width: 100%; height: 100%; border: none;" type="application/pdf"></iframe>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'Datos Biométricos (PDF)',
+                    html,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    willClose: () => {
+                        try { URL.revokeObjectURL(pdfBlobUrl); } catch {}
+                    }
+                });
+            },
+            error: () => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error al cargar Biometría',
+                    text: 'No se pudo cargar el PDF de biometría. Verifique su sesión y conexión.',
                     icon: 'error',
                     confirmButtonText: 'Entendido'
                 });

@@ -85,6 +85,21 @@ export class Aside implements OnInit {
                 this.canViewPsicologiaGestion = true;
                 break;
 
+            case 'psicólogo':
+                // Variante con tilde
+                this.canViewPsicologiaGestion = true;
+                break;
+
+            case 'psicólogo-supervisor':
+                // Psicólogo-Supervisor
+                this.canViewPsicologiaGestion = true;
+                break;
+
+            case 'psicologo-supervisor':
+                // Variante sin tilde
+                this.canViewPsicologiaGestion = true;
+                break;
+
             case 'usuario':
                 // Usuario solo puede ver IPS Gestión
                 this.canViewIpsGestion = true;

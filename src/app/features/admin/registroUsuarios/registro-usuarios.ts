@@ -43,7 +43,7 @@ export class RegistroUsuarios implements OnInit {
             crNombreUsuario: ['', [Validators.required, Validators.email]],
             crPassword: ['', [Validators.required]],
             crPerfil: ['Administrador', [Validators.required]],
-            crEmpresa: ['', [Validators.required]]
+            crEmpresa: ['']
         });
 
         this.form.get('peCorreo')?.valueChanges.subscribe(val => {

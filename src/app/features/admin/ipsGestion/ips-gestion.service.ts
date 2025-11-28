@@ -115,4 +115,44 @@ export class IpsGestionService {
             })
         );
     }
+
+    subirBiometria(idAspirante: string, idUsuario: string, pdfFile: File): Observable<any> {
+        const token = localStorage.getItem('token') ?? '';
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${token}`
+        });
+
+        const formData = new FormData();
+        formData.append('id_aspirante', idAspirante);
+        formData.append('id_usuario', idUsuario);
+        formData.append('pdf', pdfFile, pdfFile.name);
+
+        return this.http.put<any>('http://3.142.186.227:3000/api/hojas-vida/biometria/subir', formData, { headers }).pipe(
+            catchError((error: HttpErrorResponse) => {
+                if (error.error && typeof error.error === 'object' && error.error.hasOwnProperty('error')) {
+                    return new Observable(observer => {
+                        observer.next(error.error);
+                        observer.complete();
+                    });
+                }
+                return throwError(() => error);
+            })
+        );
+    }
+
+    obtenerBiometriaPorAspirante(idAspirante: string): Observable<Blob> {
+        const token = localStorage.getItem('token') ?? '';
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        return this.http.get(`http://3.142.186.227:3000/api/hojas-vida/biometria/descargar/${idAspirante}`, {
+            headers,
+            responseType: 'blob'
+        }).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(() => error);
+            })
+        );
+    }
 }

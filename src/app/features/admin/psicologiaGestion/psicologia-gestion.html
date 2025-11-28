@@ -4,7 +4,7 @@
     <ul class="nav nav-tabs mb-4" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link" [class.active]="activeTab === 'consulta'" (click)="setActiveTab('consulta')"
-                type="button" [disabled]="!isSupervisorPsico">
+                type="button" [disabled]="!(isSupervisorPsico || isPsicologo)">
                 <i class="fas fa-search"></i> Consultar Hojas de Vida
             </button>
         </li>
@@ -15,19 +15,19 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'formulario'" (click)="setActiveTab('formulario')"
+            <button *ngIf="isSupervisorPsico" class="nav-link" [class.active]="activeTab === 'formulario'" (click)="setActiveTab('formulario')"
                 type="button">
                 <i class="fas fa-clipboard-list"></i> Formulario
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'notificacion'"
+            <button *ngIf="isSupervisorPsico" class="nav-link" [class.active]="activeTab === 'notificacion'"
                 (click)="setActiveTab('notificacion')" type="button">
                 <i class="fas fa-envelope-open-text"></i> Formulario Notificación
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeTab === 'preguntas'"
+            <button *ngIf="isSupervisorPsico" class="nav-link" [class.active]="activeTab === 'preguntas'"
                 (click)="setActiveTab('preguntas')" type="button">
                 <i class="fas fa-question-circle"></i> Creación Preguntas
             </button>
@@ -37,7 +37,7 @@
     <div class="tab-content">
         <!-- ============ TAB 1: CONSULTAR HOJAS DE VIDA ============ -->
         @if (activeTab === 'consulta') {
-        @if (isSupervisorPsico) {
+        @if (isSupervisorPsico || isPsicologo) {
         <div class="tab-pane fade show active" [class.show]="activeTab === 'consulta'">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-gradient-primary text-white">

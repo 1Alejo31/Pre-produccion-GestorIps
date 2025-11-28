@@ -359,6 +359,32 @@ export class IpsGestion implements OnInit {
             html += '</div></div>';
         }
 
+        // Nuevo: Documento de Datos Biométricos
+        if ((hoja as any)?.RUTA_BIOMETRIA && (hoja as any)?.RUTA_BIOMETRIA?.ruta) {
+            const rutaBio = (hoja as any)?.RUTA_BIOMETRIA?.ruta || '';
+            const fechaBio = (hoja as any)?.RUTA_BIOMETRIA?.fecha || '';
+            html += '<div class="card mb-3">';
+            html += '<div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-fingerprint me-2"></i>Datos Biométricos</h6>';
+            html += '</div>';
+            html += '<div class="card-body text-center">';
+            html += '<div class="mb-3">';
+            html += '<i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>';
+            html += `<p class="mt-2 mb-3"><strong>Archivo biométrico disponible</strong><br>`;
+            if (fechaBio) {
+                try {
+                    const f = new Date(fechaBio).toLocaleString('es-CO');
+                    html += `<small class="text-muted">Subido: ${f}</small>`;
+                } catch {}
+            }
+            html += `</p>`;
+            html += `<button type="button" class="btn btn-primary" id="verBiometriaBtn">`;
+            html += `<i class="fas fa-eye me-2"></i>Ver Biometría`;
+            html += `</button>`;
+            html += '</div>';
+            html += '</div></div>';
+        }
+
         html += '</div>';
 
         Swal.fire({
@@ -378,6 +404,10 @@ export class IpsGestion implements OnInit {
                     if (verPdfBtn) {
                         verPdfBtn.onclick = () => this.verPDF(hoja.PDF_URL!);
                     }
+                }
+                const verBioBtn = document.getElementById('verBiometriaBtn');
+                if (verBioBtn) {
+                    verBioBtn.onclick = () => this.verBiometriaPorAspirante(hoja._id);
                 }
             }
         });
@@ -747,6 +777,118 @@ export class IpsGestion implements OnInit {
         });
     }
 
+    cargarBiometria(caso: HojaVida) {
+        Swal.fire({
+            title: 'Cargar Datos Biométricos',
+            html: `
+                <div class="text-start mb-3">
+                    <p><strong>Paciente:</strong> ${caso.NOMBRE} ${caso.PRIMER_APELLIDO} ${caso.SEGUNDO_APELLIDO}</p>
+                    <p><strong>Documento:</strong> ${caso.DOCUMENTO}</p>
+                </div>
+                <div class="mb-3">
+                    <label for="bioFile" class="form-label">Seleccionar archivo PDF de datos biométricos:</label>
+                    <input type="file" id="bioFile" class="form-control" accept=".pdf">
+                </div>
+                <div id="bioPreview" class="mt-3" style="display: none;">
+                    <h6>Vista previa:</h6>
+                    <embed id="bioEmbed" type="application/pdf" width="100%" height="300px">
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar Biometría',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            width: '600px',
+            didOpen: () => {
+                const fileInput = document.getElementById('bioFile') as HTMLInputElement;
+                const preview = document.getElementById('bioPreview') as HTMLDivElement;
+                const embed = document.getElementById('bioEmbed') as HTMLEmbedElement;
+
+                fileInput?.addEventListener('change', (event) => {
+                    const file = (event.target as HTMLInputElement).files?.[0];
+                    if (file && file.type === 'application/pdf') {
+                        const fileURL = URL.createObjectURL(file);
+                        embed.src = fileURL;
+                        preview.style.display = 'block';
+                    } else if (file) {
+                        Swal.showValidationMessage('Por favor seleccione un archivo PDF válido');
+                        preview.style.display = 'none';
+                    }
+                });
+            },
+            preConfirm: () => {
+                const fileInput = document.getElementById('bioFile') as HTMLInputElement;
+                const file = fileInput?.files?.[0];
+
+                if (!file) {
+                    Swal.showValidationMessage('Por favor seleccione un archivo PDF');
+                    return false;
+                }
+
+                if (file.type !== 'application/pdf') {
+                    Swal.showValidationMessage('El archivo debe ser un PDF');
+                    return false;
+                }
+
+                if (file.size > 40 * 1024 * 1024) {
+                    Swal.showValidationMessage('El archivo no debe superar los 40MB');
+                    return false;
+                }
+
+                return file;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                this.procesarCargaBiometria(caso._id, result.value);
+            }
+        });
+    }
+
+    private procesarCargaBiometria(idAspirante: string, pdfFile: File) {
+        const userInfo = this.authService.getUserInfo();
+        const idUsuario = userInfo?.id;
+
+        if (!idUsuario) {
+            Swal.fire({
+                title: 'Sesión requerida',
+                text: 'No se pudo obtener el usuario logueado. Inicie sesión nuevamente.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        this.ipsGestionService.subirBiometria(idAspirante, idUsuario, pdfFile).subscribe({
+            next: (response) => {
+                if (response?.error === 0) {
+                    Swal.fire({
+                        title: '¡Biometría cargada!',
+                        text: response?.response?.mensaje || 'PDF de datos biométricos subido correctamente',
+                        icon: 'success',
+                        confirmButtonText: 'Entendido'
+                    });
+                    this.consultarCasosTomados();
+                } else {
+                    Swal.fire({
+                        title: 'Error al cargar biometría',
+                        text: response?.response?.mensaje || response?.mensaje || 'Error desconocido del servidor',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
+                    });
+                }
+            },
+            error: (error) => {
+                Swal.fire({
+                    title: 'Error de Conexión',
+                    text: 'No se pudo cargar el PDF de biometría. Verifique su conexión.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
     onPdfFileSelected(event: any) {
         const file = event.target.files[0];
         if (file) {
@@ -1029,6 +1171,62 @@ export class IpsGestion implements OnInit {
                 Swal.fire({
                     title: 'Error al cargar PDF',
                     text: 'No se pudo cargar el documento PDF. Verifique que el archivo existe.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
+    verBiometriaPorAspirante(aspiranteId: string): void {
+        if (!aspiranteId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo identificar el aspirante para descargar la biometría',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cargando Biometría...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        this.ipsGestionService.obtenerBiometriaPorAspirante(aspiranteId).subscribe({
+            next: (pdfBlob: Blob) => {
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                Swal.close();
+
+                const html = `
+                    <div style="width: 100%; height: 80vh;">
+                        <iframe src="${pdfBlobUrl}" style="width: 100%; height: 100%; border: none;" type="application/pdf"></iframe>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'Datos Biométricos (PDF)',
+                    html,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    willClose: () => {
+                        try { URL.revokeObjectURL(pdfBlobUrl); } catch {}
+                    }
+                });
+            },
+            error: (error) => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error al cargar Biometría',
+                    text: 'No se pudo cargar el PDF de biometría. Verifique su sesión y conexión.',
                     icon: 'error',
                     confirmButtonText: 'Entendido'
                 });

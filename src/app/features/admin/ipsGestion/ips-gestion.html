@@ -69,7 +69,6 @@
                                 <tr>
                                     <th>Documento</th>
                                     <th>Nombre Completo</th>
-                                    <th>Género</th>
                                     <th>Correo</th>
                                     <th>Celular</th>
                                     <th>Ciudad</th>
@@ -82,7 +81,6 @@
                                 <tr>
                                     <td>{{ hoja.DOCUMENTO }}</td>
                                     <td>{{ hoja.NOMBRE }} {{ hoja.PRIMER_APELLIDO }} {{ hoja.SEGUNDO_APELLIDO }}</td>
-                                    <td>{{ hoja.GENERO }}</td>
                                     <td>{{ hoja.CORREO }}</td>
                                     <td>{{ hoja.CELULAR }}</td>
                                     <td>{{ hoja.CIUDAD }}</td>
@@ -274,6 +272,11 @@
                                                 class="btn btn-outline-primary btn-sm btn-action btn-cargar-pdf"
                                                 (click)="cargarPDF(caso)" title="Cargar PDF">
                                                 <i class="fas fa-file-pdf"></i> PDF
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-warning btn-sm btn-action btn-biometria"
+                                                (click)="cargarBiometria(caso)" title="Cargar Datos Biométricos">
+                                                <i class="fas fa-fingerprint"></i> Biometría
                                             </button>
                                         </div>
                                     </td>

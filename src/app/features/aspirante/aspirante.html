@@ -18,6 +18,12 @@
                                 placeholder="Ingresar número de documento" required style="margin-top: 5%;">
                             <small class="form-text text-muted">Ingrese solo números (6-12 dígitos)</small>
                         </div>
+                        <div class="form-group mt-3">
+                            <label for="codigoInscripcion">Código de Inscripción</label>
+                            <input type="text" class="form-control" id="codigoInscripcion" name="codigoInscripcion"
+                                   [(ngModel)]="aspiranteData.codigoInscripcion" autocomplete="off"
+                                   placeholder="Ingresar código de inscripción" required>
+                        </div>
                         
                         @if (aspiranteData.errorMessage) {
                             <div class="alert alert-danger mt-3" role="alert">

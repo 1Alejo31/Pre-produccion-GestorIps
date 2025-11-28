@@ -90,11 +90,11 @@ export class PsicologiaGestion implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.user = this.auth.getUserInfo();
         const perfil = (this.user?.perfil || '').toLowerCase();
-        this.isSupervisorPsico = perfil === 'supervisor_psicologia' || perfil === 'administrador';
-        this.isPsicologo = perfil === 'psicologo' || perfil === 'supervisor_psicologia' || perfil === 'administrador';
+        this.isSupervisorPsico = perfil === 'supervisor_psicologia' || perfil === 'psicólogo-supervisor' || perfil === 'psicologo-supervisor' || perfil === 'administrador';
+        this.isPsicologo = perfil === 'psicologo' || perfil === 'supervisor_psicologia' || perfil === 'psicólogo-supervisor' || perfil === 'psicologo-supervisor' || perfil === 'administrador'  || perfil === 'psicólogo';;
 
         // Pestaña inicial
-        this.activeTab = this.isSupervisorPsico ? 'consulta' : 'casos';
+        this.activeTab = 'consulta';
 
         // Preguntas por defecto (como en la imagen)
         this.entrevista.general = [
@@ -106,16 +106,25 @@ export class PsicologiaGestion implements OnInit, OnDestroy {
             { pregunta: 'Tipo de relación padres?', respuesta: 'NO APLICA', ampliacion: '', enviarConcepto: false },
         ];
 
-        // Cargar datos al iniciar si es supervisor y la pestaña inicial es consulta
-        if (this.isSupervisorPsico && this.activeTab === 'consulta') {
+        // Cargar datos al iniciar si es supervisor o psicólogo y la pestaña inicial es consulta
+        if ((this.isSupervisorPsico || this.isPsicologo) && this.activeTab === 'consulta') {
             this.consultarHojasDeVida();
         }
     }
 
     setActiveTab(tab: 'consulta' | 'casos' | 'formulario' | 'notificacion' | 'preguntas' | 'preguntas_activas'): void {
+        if ((tab === 'formulario' || tab === 'notificacion' || tab === 'preguntas') && !this.isSupervisorPsico) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Acceso denegado',
+                text: 'Tu perfil no tiene acceso a esta sección.'
+            });
+            return;
+        }
+
         this.activeTab = tab;
 
-        if (tab === 'consulta' && this.isSupervisorPsico) {
+        if (tab === 'consulta' && (this.isSupervisorPsico || this.isPsicologo)) {
             this.consultarHojasDeVida();
         }
 
@@ -138,7 +147,7 @@ export class PsicologiaGestion implements OnInit, OnDestroy {
     }
 
     consultarHojasDeVida(): void {
-        if (!this.isSupervisorPsico) return;
+        if (!(this.isSupervisorPsico || this.isPsicologo)) return;
         this.isLoadingConsulta = true;
 
         this.psicoService.consultarHojasVida().subscribe({
@@ -149,39 +158,18 @@ export class PsicologiaGestion implements OnInit, OnDestroy {
                     this.totalItems = this.hojasVidaExistentes.length;
                     this.filtrarHojasVida();
 
-                    if (this.hojasVidaExistentes.length === 0) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Sin datos',
-                            text: 'No se encontraron hojas de vida registradas'
-                        });
-                    }
+                    if (this.hojasVidaExistentes.length === 0) { }
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.response?.mensaje || response.mensaje || 'Error al consultar las hojas de vida'
-                    });
+                    this.hojasVidaExistentes = [];
+                    this.hojasVidaFiltradas = [];
+                    this.totalItems = 0;
                 }
             },
             error: (error) => {
                 this.isLoadingConsulta = false;
-                if (error.status === 401 || !this.auth.getToken?.()) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Sesión requerida',
-                        text: 'Debes iniciar sesión para acceder a esta función.',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                    if (this.auth.handleAuthError) this.auth.handleAuthError();
-                    return;
-                }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Error al consultar las hojas de vida: ' + (error.error?.message || error.message)
-                });
+                this.hojasVidaExistentes = [];
+                this.hojasVidaFiltradas = [];
+                this.totalItems = 0;
             }
         });
     }

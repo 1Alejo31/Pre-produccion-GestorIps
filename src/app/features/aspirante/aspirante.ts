@@ -18,6 +18,7 @@ export class Aspirante implements OnDestroy {
 
   aspiranteData = {
     numeroDocumento: '',
+    codigoInscripcion: '',
     errorMessage: ''
   }
 
@@ -65,9 +66,11 @@ export class Aspirante implements OnDestroy {
   }
 
   buscarAspirante() {
-
-    if (!this.aspiranteData.numeroDocumento) {
-      this.aspiranteData.errorMessage = 'Por favor, ingrese el número de documento';
+    
+    if (!this.aspiranteData.numeroDocumento || !this.aspiranteData.codigoInscripcion) {
+      this.aspiranteData.errorMessage = !this.aspiranteData.numeroDocumento
+        ? 'Por favor, ingrese el número de documento'
+        : 'Por favor, ingrese el código de inscripción';
       return;
     }
 
@@ -89,7 +92,10 @@ export class Aspirante implements OnDestroy {
       'Content-Type': 'application/json'
     });
 
-    const body = { documento: this.aspiranteData.numeroDocumento };
+    const body = {
+      documento: this.aspiranteData.numeroDocumento,
+      codigo_inscripcion: this.aspiranteData.codigoInscripcion
+    };
 
     this.http.post<any>('http://3.142.186.227:3000/api/hojas-vida/por_documento', body, { headers })
       .subscribe({
@@ -99,13 +105,23 @@ export class Aspirante implements OnDestroy {
             this.aspiranteInfo = response.response.data;
             this.showModal = true;
           } else {
-            this.aspiranteData.errorMessage = 'No se encontró información para este documento';
+            this.aspiranteData.errorMessage = '';
+            Swal.fire({
+              icon: 'warning',
+              title: 'No se encontró aspirante',
+              text: 'Verifique el documento y el código de inscripción'
+            });
           }
         },
         error: (error) => {
           this.loading = false;
           console.error('Error al buscar aspirante:', error);
-          this.aspiranteData.errorMessage = 'Error al buscar la información. Por favor, intente nuevamente.';
+          this.aspiranteData.errorMessage = '';
+          Swal.fire({
+            icon: 'error',
+            title: 'No se encontró aspirante',
+            text: 'Por favor, verifique los datos e intente nuevamente.'
+          });
         }
       });
   }
@@ -113,6 +129,7 @@ export class Aspirante implements OnDestroy {
   limpiarFormulario() {
     this.aspiranteData = {
       numeroDocumento: '',
+      codigoInscripcion: '',
       errorMessage: ''
     };
   }

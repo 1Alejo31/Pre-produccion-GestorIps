@@ -107,16 +107,11 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Empresa *</label>
-                            <select class="form-select" formControlName="crEmpresa"
-                                [class.is-invalid]="submitted && f['crEmpresa'].invalid"
-                                [disabled]="cargandoIps">
+                            <select class="form-select" formControlName="crEmpresa" [disabled]="cargandoIps">
                                 <option value="" *ngIf="!cargandoIps">Seleccione una IPS</option>
                                 <option value="" *ngIf="cargandoIps">Cargando IPS...</option>
                                 <option *ngFor="let ips of ips" [value]="ips._id">{{ ips.NOMBRE_IPS }}</option>
                             </select>
-                            <div class="invalid-feedback" *ngIf="submitted && f['crEmpresa'].invalid">
-                                Debe seleccionar una IPS
-                            </div>
                         </div>
                     </div>
                 </div>

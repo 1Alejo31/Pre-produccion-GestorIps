@@ -148,11 +148,19 @@ export class Home implements OnInit, OnDestroy, AfterViewInit {
                 this.canViewGestorHojaVida = true;
                 break;
 
-            case 'supervisor_psicologia':
+            case 'psicologo':
                 this.canViewPsicologiaGestion = true;
                 break;
 
-            case 'psicologo':
+            case 'psicólogo':
+                this.canViewPsicologiaGestion = true;
+                break;
+
+            case 'psicólogo-supervisor':
+                this.canViewPsicologiaGestion = true;
+                break;
+
+            case 'psicologo-supervisor':
                 this.canViewPsicologiaGestion = true;
                 break;
 
