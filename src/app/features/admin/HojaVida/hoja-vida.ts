@@ -849,7 +849,8 @@ export class HojaVida implements AfterViewInit, OnDestroy {
                 hoja.NOMBRE?.toLowerCase().includes(term) ||
                 hoja.PRIMER_APELLIDO?.toLowerCase().includes(term) ||
                 hoja.CORREO?.toLowerCase().includes(term) ||
-                hoja.CIUDAD?.toLowerCase().includes(term)
+                hoja.CIUDAD?.toLowerCase().includes(term) ||
+                this.getIpsNombre(hoja).toLowerCase().includes(term)
             );
         }
         this.currentPage = 1; // Resetear a la primera página
@@ -912,6 +913,26 @@ export class HojaVida implements AfterViewInit, OnDestroy {
             default:
                 return 'bg-secondary';
         }
+    }
+
+    // Nombre de IPS (desde IPS o IPS_ID)
+    getIpsNombre(hoja: any): string {
+        const nombre = hoja?.IPS?.NOMBRE_IPS || hoja?.IPS_ID?.NOMBRE_IPS || '';
+        return nombre && nombre.trim().length > 0 ? nombre : 'SIN IPS';
+    }
+
+    // Texto corto para mobile
+    getIpsShort(hoja: any): string {
+        const nombre = this.getIpsNombre(hoja);
+        if (nombre === 'SIN IPS') return 'SIN';
+        const base = nombre.replace(/\s+/g, '').toUpperCase();
+        return base.slice(0, 3);
+    }
+
+    // Clase del badge para IPS (rojo si no hay, gris si hay)
+    getIpsBadgeClass(hoja: any): string {
+        const nombre = hoja?.IPS?.NOMBRE_IPS || hoja?.IPS_ID?.NOMBRE_IPS || '';
+        return nombre && nombre.trim().length > 0 ? 'bg-secondary' : 'bg-danger';
     }
 
     // Ver detalle completo de una hoja de vida
@@ -1050,13 +1071,17 @@ export class HojaVida implements AfterViewInit, OnDestroy {
 
             medicalFields.forEach(field => {
                 let value = hoja[field.key] || 'N/A';
+                if (field.key === 'IPS_ID') {
+                    value = this.getIpsNombre(hoja);
+                }
                 if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
                     if (field.isDateTime && value !== 'N/A') {
                         value = this.formatearFecha(value);
                     }
+                    const textClass = field.key === 'IPS_ID' && value === 'SIN IPS' ? 'text-danger' : 'text-dark';
                     html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
                     html += `<strong class="text-muted">${field.label}:</strong><br>`;
-                    html += `<span class="text-dark" style="font-size: 1.1em;">${value}</span>`;
+                    html += `<span class="${textClass}" style="font-size: 1.1em;">${value}</span>`;
                     html += `</div>`;
                 }
             });
@@ -1079,21 +1104,35 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         html += '<div class="row">';
         
         const systemFields = [
-            { key: 'PKEYHOJAVIDA', label: '🔑 ID Hoja de Vida' },
-            { key: 'PKEYASPIRANT', label: '🔑 ID Aspirante' },
             { key: 'createdAt', label: '📅 Fecha de Creación', isDate: true },
-            { key: 'updatedAt', label: '📅 Última Actualización', isDate: true }
+            { key: 'updatedAt', label: '📅 Última Actualización', isDate: true },
+            { key: 'ESTADO_NOTIFICACION', label: '📣 Estado de Notificación' },
+            { key: 'USUARIO_SIC', label: '🔐 Psicologo' },
+            { key: 'IPS_ID', label: '🏥 IPS' }
         ];
 
         systemFields.forEach(field => {
             let value = hoja[field.key] || 'N/A';
+            if (field.key === 'IPS_ID') {
+                value = this.getIpsNombre(hoja);
+            }
+            if (field.key === 'USUARIO_SIC') {
+                const permiso = hoja?.PERMISO_USUARIO_SIC || {};
+                const fullName = [permiso?.Pe_Nombre, permiso?.Pe_Apellido, permiso?.Pe_Seg_Apellido]
+                    .filter((p: any) => p && String(p).trim().length > 0)
+                    .join(' ')
+                    .trim();
+                value = fullName || value;
+            }
             if (value !== 'N/A' && value !== '' && value !== null && value !== undefined) {
                 if (field.isDate && value !== 'N/A') {
                     value = this.formatearFecha(value);
                 }
+                const textClass = field.key === 'IPS_ID' && value === 'SIN IPS' ? 'text-danger' : 'text-dark';
+                const style = field.key === 'IPS_ID' ? 'font-size: 1.1em;' : 'font-size: 1.1em; font-family: monospace;';
                 html += `<div class="col-md-6 mb-2 p-2" style="border-radius: 5px;">`;
                 html += `<strong class="text-muted">${field.label}:</strong><br>`;
-                html += `<span class="text-dark" style="font-size: 1.1em; font-family: monospace;">${value}</span>`;
+                html += `<span class="${textClass}" style="${style}">${value}</span>`;
                 html += `</div>`;
             }
         });
@@ -1130,12 +1169,12 @@ export class HojaVida implements AfterViewInit, OnDestroy {
             html += '</div></div>';
         }
 
-        // Documento de Datos Biométricos
+        // Documento de Biometría
         if (hoja?.RUTA_BIOMETRIA && hoja?.RUTA_BIOMETRIA?.ruta) {
             const fechaBio = hoja?.RUTA_BIOMETRIA?.fecha || '';
             html += '<div class="card mb-3 shadow">';
             html += '<div class="card-header bg-info text-white">';
-            html += '<h6 class="mb-0"><i class="fas fa-fingerprint me-2"></i>Datos Biométricos</h6>';
+            html += '<h6 class="mb-0"><i class="fas fa-fingerprint me-2"></i>Biometría</h6>';
             html += '</div>';
             html += '<div class="card-body text-center">';
             html += '<div class="mb-3">';
@@ -1150,6 +1189,24 @@ export class HojaVida implements AfterViewInit, OnDestroy {
             html += `<div class="mt-2">`;
             html += `<button type="button" class="btn btn-primary" id="verBiometriaBtn">`;
             html += `<i class="fas fa-eye me-2"></i>Ver Biometría`;
+            html += `</button>`;
+            html += `</div>`;
+            html += '</div></div>';
+        }
+
+        // Documento de Consentimiento
+        if (hoja?.RUTA_NOTIFICACION_RECIBIDA) {
+            html += '<div class="card mb-3 shadow">';
+            html += '<div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Consentimiento</h6>';
+            html += '</div>';
+            html += '<div class="card-body text-center">';
+            html += '<div class="mb-3">';
+            html += '<i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>';
+            html += `<p class="mt-2 mb-3"><strong>PDF de consentimiento disponible</strong></p>`;
+            html += `<div class="mt-2">`;
+            html += `<button type="button" class="btn btn-primary" id="verConsentimientoBtn">`;
+            html += `<i class="fas fa-eye me-2"></i>Ver Consentimiento`;
             html += `</button>`;
             html += `</div>`;
             html += '</div></div>';
@@ -1175,10 +1232,33 @@ export class HojaVida implements AfterViewInit, OnDestroy {
                         verPdfBtn.onclick = () => this.verPDF(hoja.PDF_URL!);
                     }
                 }
+                {
+                    const verBioBtn = document.getElementById('verBiometriaBtn') as HTMLButtonElement | null;
+                    if (verBioBtn && hoja?.RUTA_BIOMETRIA?.ruta) {
+                        let filename = '';
+                        try {
+                            const parts = String(hoja.RUTA_BIOMETRIA.ruta).split('/');
+                            filename = parts[parts.length - 1] || '';
+                        } catch {}
+                        if (filename) {
+                            verBioBtn.onclick = () => this.verBiometriaPorAspirante(hoja._id);
+                        }
+                    }
+                }
                 const verBioBtn = document.getElementById('verBiometriaBtn') as HTMLButtonElement | null;
                 if (verBioBtn) {
-                    const aspiranteId = hoja?._id || hoja?.PKEYASPIRANT || hoja?.PKEYHOJAVIDA;
-                    verBioBtn.onclick = () => this.verBiometriaPorAspirante(String(aspiranteId || ''));
+                    const ruta = hoja?.RUTA_BIOMETRIA?.ruta || '';
+                    let filename = '';
+                    try {
+                        const parts = String(ruta).split('/');
+                        filename = parts[parts.length - 1] || '';
+                    } catch {}
+                    verBioBtn.onclick = () => this.verBiometriaPorAspirante(hoja._id);
+                }
+
+                const verConsentBtn = document.getElementById('verConsentimientoBtn') as HTMLButtonElement | null;
+                if (verConsentBtn) {
+                    verConsentBtn.onclick = () => this.verConsentimientoPorAspirante(hoja._id);
                 }
             }
         });
@@ -1265,6 +1345,112 @@ export class HojaVida implements AfterViewInit, OnDestroy {
         });
     }
 
+    verBiometriaPorFilename(filename: string): void {
+        if (!filename || String(filename).trim().length === 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo obtener el nombre del archivo de biometría',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cargando Biometría...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        this.hojaVidaService.obtenerPDFRecibida(filename).subscribe({
+            next: (pdfBlob: Blob) => {
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                Swal.close();
+                const html = `
+                    <div style="width: 100%; height: 80vh;">
+                        <iframe src="${pdfBlobUrl}" style="width: 100%; height: 100%; border: none;" type="application/pdf"></iframe>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'Biometría (PDF)',
+                    html,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    willClose: () => {
+                        try { URL.revokeObjectURL(pdfBlobUrl); } catch {}
+                    }
+                });
+            },
+            error: () => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error al cargar Biometría',
+                    text: 'No se pudo cargar el PDF de biometría. Verifique su sesión y conexión.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
+    verConsentimientoPorFilename(filename: string): void {
+        if (!filename || String(filename).trim().length === 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo obtener el nombre del archivo de consentimiento',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cargando Consentimiento...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        this.hojaVidaService.obtenerPDFRecibidaNotificaciones(filename).subscribe({
+            next: (pdfBlob: Blob) => {
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                Swal.close();
+                const html = `
+                    <div style="width: 100%; height: 80vh;">
+                        <iframe src="${pdfBlobUrl}" style="width: 100%; height: 100%; border: none;" type="application/pdf"></iframe>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'Consentimiento (PDF)',
+                    html,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    willClose: () => {
+                        try { URL.revokeObjectURL(pdfBlobUrl); } catch {}
+                    }
+                });
+            },
+            error: () => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error al cargar Consentimiento',
+                    text: 'No se pudo cargar el PDF de consentimiento. Verifique su sesión y conexión.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
     verBiometriaPorAspirante(aspiranteId: string): void {
         if (!aspiranteId || String(aspiranteId).trim().length === 0) {
             Swal.fire({
@@ -1311,6 +1497,59 @@ export class HojaVida implements AfterViewInit, OnDestroy {
                 Swal.fire({
                     title: 'Error al cargar Biometría',
                     text: 'No se pudo cargar el PDF de biometría. Verifique su sesión y conexión.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    }
+
+    verConsentimientoPorAspirante(aspiranteId: string): void {
+        if (!aspiranteId || String(aspiranteId).trim().length === 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo identificar el aspirante para ver el consentimiento',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Cargando Consentimiento...',
+            text: 'Por favor espere mientras se carga el documento',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        this.hojaVidaService.obtenerBiometriaPorAspirante(aspiranteId).subscribe({
+            next: (pdfBlob: Blob) => {
+                const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+                Swal.close();
+                const html = `
+                    <div style="width: 100%; height: 80vh;">
+                        <iframe src="${pdfBlobUrl}" style="width: 100%; height: 100%; border: none;" type="application/pdf"></iframe>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'Consentimiento (PDF)',
+                    html,
+                    width: '95%',
+                    heightAuto: false,
+                    showCloseButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6c757d',
+                    willClose: () => {
+                        try { URL.revokeObjectURL(pdfBlobUrl); } catch {}
+                    }
+                });
+            },
+            error: () => {
+                Swal.close();
+                Swal.fire({
+                    title: 'Error al cargar Consentimiento',
+                    text: 'No se pudo cargar el PDF. Verifique su sesión y conexión.',
                     icon: 'error',
                     confirmButtonText: 'Entendido'
                 });

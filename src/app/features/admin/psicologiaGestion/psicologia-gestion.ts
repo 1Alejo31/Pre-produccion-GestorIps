@@ -347,14 +347,19 @@ export class PsicologiaGestion implements OnInit, OnDestroy {
             const medicalFields = [
                 { key: 'EXAMENES', label: '🔬 Exámenes' },
                 { key: 'FECHA_HORA', label: '📅 Fecha y Hora', isDateTime: true },
-                { key: 'IPS_ID', label: '🏥 ID IPS' },
+                { key: 'IPS_ID', label: '🏥 IPS' },
                 { key: 'NOMBREIPS', label: '🏥 Nombre IPS' }
             ];
             medicalFields.forEach(f => {
                 let v: any = hoja?.[f.key] ?? 'N/A';
+                if (f.key === 'IPS_ID') {
+                    const nombreIps = hoja?.IPS?.NOMBRE_IPS || hoja?.IPS_ID?.NOMBRE_IPS || '';
+                    v = nombreIps && nombreIps.trim().length > 0 ? nombreIps : 'SIN IPS';
+                }
                 if (v !== 'N/A' && v !== '' && v != null) {
                     if (f.isDateTime) v = this.formatearFecha(v);
-                    html += `<div class="col-md-6 mb-2 p-2"><strong class="text-muted">${f.label}:</strong><br><span class="text-dark" style="font-size:1.1em;">${v}</span></div>`;
+                    const textClass = f.key === 'IPS_ID' && v === 'SIN IPS' ? 'text-danger' : 'text-dark';
+                    html += `<div class="col-md-6 mb-2 p-2"><strong class="text-muted">${f.label}:</strong><br><span class="${textClass}" style="font-size:1.1em;">${v}</span></div>`;
                 }
             });
             if (hoja?.RECOMENDACIONES) {

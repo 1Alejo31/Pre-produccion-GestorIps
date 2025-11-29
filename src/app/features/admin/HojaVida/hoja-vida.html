@@ -839,6 +839,9 @@
                                             <th style="min-width: 100px;">
                                                 <i class="fas fa-flag me-1"></i>Estado
                                             </th>
+                                            <th style="min-width: 100px;">
+                                                <i class="fas fa-flag me-1"></i>IPS
+                                            </th>
                                             <th style="min-width: 120px;" class="text-center">
                                                 <i class="fas fa-cogs me-1"></i>
                                                 <span class="d-none d-sm-inline">Acciones</span>
@@ -908,6 +911,15 @@
                                                     <span class="me-1">●</span>
                                                     <span class="d-none d-sm-inline">{{ hoja.ESTADO }}</span>
                                                     <span class="d-sm-none">{{ hoja.ESTADO.substring(0, 3) }}</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                    [ngClass]="getIpsBadgeClass(hoja)"
+                                                    [title]="getIpsNombre(hoja)">
+                                                    <span class="me-1">●</span>
+                                                    <span class="d-none d-sm-inline">{{ getIpsNombre(hoja) }}</span>
+                                                    <span class="d-sm-none">{{ getIpsShort(hoja) }}</span>
                                                 </span>
                                             </td>
                                             <td class="text-center">
